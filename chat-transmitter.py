@@ -21,8 +21,17 @@ serverSocket.listen(0)          # This says not to keep clients queued up in lin
 
 # The server socket is just here to accept incoming connections. When it does
 # accept one, it creates a new client socket for the actual communication.
-print("Waiting for a client to connect")
-clientSocket, clientAddress = serverSocket.accept()
+print("Waiting for clients to connect")
+
+response = ""
+clientList = [] # List of clients that have connected
+while response != "y":
+	response = raw_input("Type enter to wait for a new client to connect, or type 'y' to stop searching for clients")
+	if response == "y":
+		break
+	else:
+		clientSocket, clientAddress = serverSocket.accept()
+		clientList.append(clientSocket) 
 
 
 # Once we have a connected receiver, begin broadcasting
@@ -33,8 +42,16 @@ message = ""
 # Main loop that listens for messages
 while message != "/exit":
 	message = raw_input("message> ")
-	clientSocket.send(message)
+	for client in clientList:
+ 		client.send(message)
 	
 # Close the sockets before exiting
-clientSocket.close()
+
+
+  	
+# Ideally we should always close our sockets, but currently this program won't
+# because it can only be quit by using ctrl + C.
+for client in clientList:
+	client.close()
+
 serverSocket.close()
