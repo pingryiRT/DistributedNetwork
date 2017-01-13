@@ -2,10 +2,21 @@
 # Documentation is here: https://docs.python.org/3/library/socket.html
 import socket
 
+def get_local_ip():
+	"""
+	A helper function to get this machine's IP address.	
+	Returns the IPv4 address as it appears to other	nodes on the network.
+	
+	This slopppy code is taken from: http://stackoverflow.com/a/1267524
+	I have no idea how it works :-/
+	"""
+	
+	return [l for l in ([ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1], [[(s.connect(('8.8.8.8', 53)), s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]]) if l][0][0]
+	
 
 # Create a server socket to accept incoming connections from clients.
-host = 'localhost' # Using localhost only makes the socket visible to client on this system.
-port = 54321         # Port can be pretty much any number. This one is easy to remember.
+host = get_local_ip() # Using localhost only makes the socket visible to client on this system.
+port = 54321          # Port can be pretty much any number. This one is easy to remember.
 
 # AF_INET means address format is IPv4
 # SOCK_STREAM specifies what kind of socket it is. This one is common.

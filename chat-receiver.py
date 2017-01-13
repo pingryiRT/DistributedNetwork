@@ -2,7 +2,9 @@ import socket
 import sys
 
 # Create a client socket to communicate with the server
-host = "localhost"
+host = raw_input("Enter transmitter's IP address (blank for localhost)")
+if host == "":
+	host = "localhost"
 port = 54321
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
