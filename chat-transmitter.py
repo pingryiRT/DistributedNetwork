@@ -28,25 +28,28 @@ serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # For now it at least reduces cursing while coding :)
 serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-# Now put that socket to use on the host and port we specified above.
-serverSocket.bind((host, port)) # Double parens are important to make the argument a tuple.
-serverSocket.listen(0)          # This says not to keep clients queued up in line to connect... I think.
+# Now put that socket to use on the host and port we specified above
+serverSocket.bind((host, port)) # Double make the argument a tuple
+serverSocket.listen(0)          # Allow up to 2 clients in the queue
 
-# The server socket is just here to accept incoming connections. When it does
-# accept one, it creates a new client socket for the actual communication.
 print("Waiting for clients to connect, type Control-C to begin broadcasting")
 
 clientList = [] # List of clients that have connected
 try:
 	while True:
+		# Server socket just accepts incoming connections. When it does accept one,
+		# Creates a new client socket for the actual communication.
 		clientSocket, clientAddress = serverSocket.accept()
-		clientList.append(clientSocket) 
+		clientList.append(clientSocket)
+		
+		print("Accepted connection from {}".format(clientAddress))
+		
 except KeyboardInterrupt:
 	pass 
 
 
-# Once we have a connected receiver, begin broadcasting
-print("Begin typing messages for broadcast.")
+# Once we have connected receivers, begin broadcasting
+print("\n\nBegin typing messages for broadcast.")
 print("Type '/exit' to end the program.")
 message = ""
 
