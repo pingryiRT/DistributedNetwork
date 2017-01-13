@@ -36,7 +36,6 @@ serverSocket.listen(0)          # This says not to keep clients queued up in lin
 # accept one, it creates a new client socket for the actual communication.
 print("Waiting for clients to connect, type Control-C to begin broadcasting")
 
-response = ""
 clientList = [] # List of clients that have connected
 try:
 	while True:
