@@ -28,5 +28,8 @@ while len(message) > 0:
   print(message)
 
 # Clean up the open sockets
-sock.shutdown(socket.SHUT_RDWR)
+
+
+
 sock.close()
+print("Connection has been closed.")
