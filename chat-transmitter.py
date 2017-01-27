@@ -30,7 +30,7 @@ serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 # Now put that socket to use on the host and port we specified above
 serverSocket.bind((host, port)) # Double make the argument a tuple
-serverSocket.listen(0)          # Allow up to 2 clients in the queue
+serverSocket.listen(2)          # Allow up to 2 clients in the queue
 
 print("Waiting for clients to connect, type Control-C to begin broadcasting")
 
