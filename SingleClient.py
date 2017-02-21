@@ -11,18 +11,18 @@ import threading
 
 
 class myThread(threading.Thread):
-""" Class used for overriding the default thread constructor, and running each thread.
-Constructor:
-type--String the type of the thread to be used in determining which function it should initiate.
-myIP--String the IP of this peer.
-port--the int port of this peer (the one that other peers will use as the second portion of 
-the connect)
-instance--that the thread should operate on the threadFunctions object. Currently only using
-one instance, the test instance of the peer network. The only place where this will likely be
-useful is if in the future we would like to make a single program connect to several networks
-at the same time (ie using one to connect to a network working on solving and another on 
-blockchain
-"""
+	""" Class used for overriding the default thread constructor, and running each thread.
+	Constructor:
+	type--String the type of the thread to be used in determining which function it should initiate.
+	myIP--String the IP of this peer.
+	port--the int port of this peer (the one that other peers will use as the second portion of 
+	the connect)
+	instance--that the thread should operate on the threadFunctions object. Currently only using
+	one instance, the test instance of the peer network. The only place where this will likely be
+	useful is if in the future we would like to make a single program connect to several networks
+	at the same time (ie using one to connect to a network working on solving and another on 
+	blockchain
+	"""
 	def __init__(self, type, myIP, port,instance):
 		"""Overriding the default constructor"""
 		threading.Thread.__init__(self)
@@ -49,17 +49,17 @@ blockchain
 #got a runtime error when iterating dicts told that forcing it into a list can help from 
 # stackexchange
 
-class peer():
-"""The peer object, represents a peer on the network, and has fields:
-stringIP--the IP address of the peer
-intPort--the port of the peer to connect to
-Socket--defaults to None, but can (and should) be overridden for the socket of the peer
-fields:
-IP--stringIP
-port--intPort
-hasSock--boolean if the peer currently has a socket object, but may also be reverted to None
-to shut down a malfunctioning peer
-"""
+class peer(object):
+	"""The peer object, represents a peer on the network, and has fields:
+	stringIP--the IP address of the peer
+	intPort--the port of the peer to connect to
+	Socket--defaults to None, but can (and should) be overridden for the socket of the peer
+	fields:
+	IP--stringIP
+	port--intPort
+	hasSock--boolean if the peer currently has a socket object, but may also be reverted to None
+	to shut down a malfunctioning peer
+	"""
 	def __init__(self, stringIP, intPort, Socket = None):
 		self.IP = stringIP
 		self.port = intPort
@@ -85,7 +85,7 @@ to shut down a malfunctioning peer
 			pass
 	
 	def send(self,message):
-	"""send a message to this peer"""
+		"""send a message to this peer"""
 		if self.hasSock == True:
 			try:
 				self.Sock.send(pickle.dumps(message))
@@ -95,7 +95,7 @@ to shut down a malfunctioning peer
 				print("peer removed")
 		
 	def receive(self):
-	"""receive a message from this peer and print it"""
+		"""receive a message from this peer and print it"""
 		if self.hasSock==True:
 			try:
 				return pickle.loads(self.Sock.recv(1024))
@@ -111,7 +111,7 @@ to shut down a malfunctioning peer
 		#aware this looks suspiciously like a setter, I just didn't feel like not doing it...	
 	
 	
-class threadFunctions():
+class threadFunctions(object):
 	"""threadFunctions (probably a bad name) that the threads run the chatclient
 	this is where the work gets done (think of an instance of this as a chatclient network
 	although will mainly be usable for multiple instances only if you want to connect to 
@@ -120,35 +120,34 @@ class threadFunctions():
 	#this feels fairly sloppy, but oh well... If someone wants to make a branch to make it
 	#less sloppy feel free to
 	def __init__(self):
-	"""peerList--a list of all the current peer objects
-		Stopper--used to stop everything
-		printStopper--used as a poor-man's lock object to control printing output 
-	"""
+		"""peerList--a list of all the current peer objects
+			Stopper--used to stop everything
+			printStopper--used as a poor-man's lock object to control printing output 
+		"""
 		self.peerList = []
 		self.Stopper = False
 		self.printStopper = False
 	
 	def printThis(self, message, type = None):
-	""" currently going to be used as a form of lock without actually using locks 
-	(because locks are scary)"""
-		if type == "input":
-			while self.printStopper: 
-				if self.printStopper == False:
-					self.printStopper = True
-					input = raw_input(message)
-					self.printStopper = False
-					return input
+		print("in printthis " + str(message))
+		""" currently going to be used as a form of lock without actually using locks 
+		(because locks are scary)"""
+		while self.printStopper:
+			pass
+		if type == "input": #this is only if it is rawinput
+				self.printStopper = True
+				input = raw_input(message)
+				self.printStopper = False
+				return input
 		else:
-			while self.printStopper:
-				if self.printStopper == False:
-					self.printStopper = True
-					print(message)
-					self.printStopper = False
-					break #in case it is true before breaks
+				self.printStopper = True
+				print(message)
+				self.printStopper = False
+			
 	
 
 	def checkIfNew(self,newPeer):
-	"""Supposed to check if a given peer is known/already on the peerlist"""
+		"""Supposed to check if a given peer is known/already on the peerlist"""
 		check = 0
 		for knownPeers in list(self.peerList): #casting to a list so we don't have
 		# errors with multiple threads
@@ -160,9 +159,9 @@ class threadFunctions():
 			return False
 				
 	def connector(self,myIP, port):
-	"""Goes through the list of peers and attempts to create a socket object to connect
-	for them (for any peers that do not currently have a socket already)
-	"""
+		"""Goes through the list of peers and attempts to create a socket object to connect
+		for them (for any peers that do not currently have a socket already)
+		"""
 		while not self.Stopper:
 			for peers in list(self.peerList):
 				if peers.hasSock == False: 
@@ -181,14 +180,14 @@ class threadFunctions():
 						
 										
 	def receiver(self):
-	""" Goes through all of the peers, and attempts to receive messages from all of the ones
-	with a socket; however, currently I believe part of this may be related to my current error
-	"""
+		""" Goes through all of the peers, and attempts to receive messages from all of the ones
+		with a socket; however, currently I believe part of this may be related to my current error
+		"""
 		while not self.Stopper:
 			for peers in list(self.peerList):
 				if peers.hasSock == True: # To me: don't you dare change this to if peers.hasSock: actually this one should work but still...
 					message = peers.receive()
-					if peer.isInstance(message):
+					if isinstance(message,peer):
 						newPeer = peer(message.IP,message.port) # think this is the line that is the problem
 						message = [newPeer] 
 						#If they just sent me themselves I still want to check if
@@ -196,17 +195,17 @@ class threadFunctions():
 						# they didn't have a sock by making a new one, and making the list 
 						# just that new one
 					if type(message) is list:
-						self.printThis("received peerlist: " + str(message) + " from " + (peers.IP,peers.port))
+						self.printThis("received peerlist: " + str(message) + " from " + str((peers.IP,peers.port)))
 						for newPeers in list(message):
-							if checkIfNew(newPeers):
+							if self.checkIfNew(newPeers):
 								self.peerList.append(newPeers)			
 					else:
-						self.printThis("from " +  (peers.IP,peers.port) + ": " + str(message))
+						self.printThis("from " +  str((peers.IP,peers.port)) + ": " + str(message))
 					
 					
 	def transmitter(self):
-	"""Goes through the list of peers and sends the message to them...
-	"""
+		"""Goes through the list of peers and sends the message to them...
+		"""
 		sendMessage = ""
 		while sendMessage != "/exit":
 			sendMessage = self.printThis("message> ","input")
@@ -216,13 +215,13 @@ class threadFunctions():
 		self.Stopper = True
 
 	def acceptor(self,myIP, port):
-	"""Waits for incoming connections and appends the new peers to list, personally I feel
-	this is likely to be the largest part of my error...
-	I think using the address from the new connection does not work/give the send address
-	I'm probably going to have a version where I can connect it as a peer and not have a port
-	then on receive end have a new type int where it will send its port number, but that's
-	annoying... But I think this is currently what's messing it up...
-	"""
+		"""Waits for incoming connections and appends the new peers to list, personally I feel
+		this is likely to be the largest part of my error...
+		I think using the address from the new connection does not work/give the send address
+		I'm probably going to have a version where I can connect it as a peer and not have a port
+		then on receive end have a new type int where it will send its port number, but that's
+		annoying... But I think this is currently what's messing it up...
+		"""
 		serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		serverSocket.bind((myIP,port))
 		serverSocket.listen(0)
@@ -270,7 +269,7 @@ acceptorThread.start()
 receiverThread.start()
 connectorThread.start()
 
-
+print("about to call transmitter")
 test.transmitter() #running the transmitter on the main thread
 
 #this should hopefully close a little nicer...
