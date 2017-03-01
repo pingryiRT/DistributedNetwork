@@ -243,11 +243,38 @@ class threadFunctions(object):
 def getPort():
 	return int(raw_input("Please enter the port number: "))
 def getIP():
-	return (raw_input("Please enter the IP: "))
+	# http://stackoverflow.com/questions/166506/finding-local-ip-addresses-using-pythons-stdlib
+	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+	s.connect(('google.com', 53))
+    
+	IP = s.getsockname()[0]
 	
-print("Your port: ")
+	
+	
+    # We need to find all cases of wrong IPs 
+	while IP[0:2] == "127" or IP == '':
+		IP = raw_input("Unable to detect IP adress, please manually type your local IP in: ")
+    
+	print("Proposed IP is: {}".format(IP))
+    
+	response = raw_input("If you would like to use a different IP please type it here or press enter to continue")
+	if response == "":
+		return IP 
+	return response
+    
+	
+	
+	
+	
+	
+	
+	
+
+################################## MAIN PROGRAM BELOW ##################################
+
+# print("Your port: ")
 port = getPort();
-print("Your IP: ")
+
 myIP = getIP()
 
 print("Peer's port")
@@ -260,7 +287,7 @@ peerOne = peer(peerOneIP,peerOnePort)
 test = threadFunctions()
 test.peerList.append(peerOne)
 
-# this is initializing and starting (it works as it is, the functions themselves are what 
+# This is initializing and starting (it works as it is, the functions themselves are what 
 # aren't working right now...)
 acceptorThread = myThread("acceptor",myIP,port,test)
 receiverThread = myThread("receiver",myIP,port,test)
@@ -272,11 +299,11 @@ connectorThread.start()
 print("about to call transmitter")
 test.transmitter() #running the transmitter on the main thread
 
-#this should hopefully close a little nicer...
+# This should hopefully close a little nicer...
 for peers in test.peerList():
 	if peers.hasSock:
 		peers.hasSock = False #doing this before to try to prevent an error
-		#peers.send() need to send something to initiate shutdown
+		# peers.send() need to send something to initiate shutdown
 		peers.Sock.shutdown(socket.SHUT_RDWR)
 		peers.Sock.close()
 		
