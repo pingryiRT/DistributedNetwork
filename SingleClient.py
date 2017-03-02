@@ -150,17 +150,14 @@ class threadFunctions(object):
 			
 	
 
-	def checkIfNew(self,newPeer):
-		""" Check whether a given peer is known (already in the peerlist). """
-		check = 0
-		for knownPeers in list(self.peerList): #casting to a list so we don't have
-		# errors with multiple threads
-			if newPeer.IP == knownPeers.IP and newPeer.port == knownPeers.port:
-					check = 1
-		if check == 0:
-			return True
-		else:
-			return False
+#	def checkIfNew(self,newPeer):
+#		""" Check whether a given peer is known (already in the peerlist). """
+#		
+#		check = False
+#		for knownPeer in self.peerList:
+#			if newPeer.IP == knownPeer.IP and newPeer.port == knownPeer.port:
+#					check = True
+#		return check
 	
 	def connector(self,myIP, port):
 		""" Goes through the list of peers and attempts to create a socket object to connect
@@ -200,9 +197,9 @@ class threadFunctions(object):
 						# just that new one
 					if type(message) is list:
 						self.printThis("received peerlist: " + str(message) + " from " + str((peers.IP,peers.port)))
-						for newPeers in list(message):
-							if self.checkIfNew(newPeers):
-								self.peerList.append(newPeers)			
+						for newPeer in message:
+							if newPeer not in self.peerList:
+								self.peerList.append(newPeer)			
 					else:
 						self.printThis("from " +  str((peers.IP,peers.port)) + ": " + str(message))
 					
@@ -237,7 +234,7 @@ class threadFunctions(object):
 			clientSocket, clientAddress = serverSocket.accept() # this section is the problem
 			#print(str(clientSocket.getpeername()) + str(type(clientSocket.getpeername())) )
 			thisPeer = peer(clientAddress[0],clientAddress[1],clientSocket)
-			if self.checkIfNew(thisPeer):
+			if thisPeer not in self.peerList:
 				self.peerList.append(thisPeer)
 			toSendList = []
 			for peers in list(self.peerList):
