@@ -1,13 +1,8 @@
 import socket
-import sys
 import pickle
 import threading
 
 
-# current problem my dictionary is not unique because my keys will be the same if two 
-# are using the same ip which really messes up testing
-#I'm still not sure if sockets can be used in the way I am attempting, but this will hopefully
-# help me get closer to seeing
 
 
 class myThread(threading.Thread):
@@ -23,6 +18,7 @@ class myThread(threading.Thread):
 	at the same time (ie using one to connect to a network working on solving and another on 
 	blockchain
 	"""
+	
 	def __init__(self, type, myIP, port,instance):
 		"""Overriding the default constructor"""
 		threading.Thread.__init__(self)
@@ -33,7 +29,7 @@ class myThread(threading.Thread):
 
 	def run(self):
 		if self.type  == "connector":
-			print("c") #test purposes, right now should get c r and a (t is the main thread)
+			print("c") # Test purposes, right now should get c r and a (t is the main thread)
 			self.instance.connector(self.myIP,self.port)
 		elif self.type == "receiver":
 			print("r")
@@ -44,10 +40,8 @@ class myThread(threading.Thread):
 		elif self.type == "acceptor":
 			print("a")
 			self.instance.acceptor(self.myIP, self.port)
-			
-			
-#got a runtime error when iterating dicts told that forcing it into a list can help from 
-# stackexchange
+
+
 
 class peer(object):
 	"""The peer object, represents a peer on the network, and has fields:
@@ -60,21 +54,27 @@ class peer(object):
 	hasSock--boolean if the peer currently has a socket object, but may also be reverted to None
 	to shut down a malfunctioning peer
 	"""
+	
 	def __init__(self, stringIP, intPort, Socket = None):
 		self.IP = stringIP
 		self.port = intPort
 			
-		self.hasSock = False
-		if Socket is not None:	#if you made it something other than none in call it will
-			self.Sock = Socket  #be true
+		# If a socet is provided, use it. Otherwise, document that.
+		#TODO Do we really need the bool hasSocket? Can't we just test for `self.socket is None`?
+		if Socket is not None:
+			self.Sock = Socket
 			self.hasSock = True 
+		else:
+			self.hasSock = False
+	
 	
 	def sendable(self):
-		""" returns an instance of peer that is this peer, but a sendable version ie no socket"""
+		""" Returns an instance of peer that is this peer, but a sendable version ie no socket"""
 		return peer(self.IP,self.port)
-		
+	
+	
 	def sendPeer(self,sendToPeer):
-		"""used for just sending this peer to another node"""
+		""" Used for just sending this peer to another node. """
 		#not super necessary, I kind of wanted a different message for when just sending the
 		#peer though...
 		sendable = self.sendable()
@@ -82,10 +82,10 @@ class peer(object):
 			sendToPeer.Sock.send(pickle.dumps(sendable))
 		except socket.error:
 			print("error sending peer " + str((self.IP,self.port)) + " to " + str((sendToPeer.IP,sendToPeer.port)) + ".")
-			pass
+	
 	
 	def send(self,message):
-		"""send a message to this peer"""
+		""" Send a message to this peer. """
 		if self.hasSock == True:
 			try:
 				self.Sock.send(pickle.dumps(message))
@@ -95,7 +95,7 @@ class peer(object):
 				print("peer removed")
 		
 	def receive(self):
-		"""receive a message from this peer and print it"""
+		""" Receive a message from this peer and print it. """
 		if self.hasSock==True:
 			try:
 				return pickle.loads(self.Sock.recv(1024))
@@ -105,10 +105,10 @@ class peer(object):
 				print("peer removed")
 
 	def addSock(self,Socket):
-		"""add a socket to the peer"""
+		""" Add a socket to the peer. """
 		self.Sock = Socket 
 		self.hasSock = True
-		#aware this looks suspiciously like a setter, I just didn't feel like not doing it...	
+		# Aware this looks suspiciously like a setter, I just didn't feel like not doing it...	
 	
 	
 class threadFunctions(object):
@@ -117,8 +117,9 @@ class threadFunctions(object):
 	although will mainly be usable for multiple instances only if you want to connect to 
 	multiple networks and keep them separate in the future
 	"""
-	#this feels fairly sloppy, but oh well... If someone wants to make a branch to make it
-	#less sloppy feel free to
+	
+	#TODO This feels fairly sloppy, but oh well... If someone wants to make a branch to make it
+	# less sloppy feel free to
 	def __init__(self):
 		"""peerList--a list of all the current peer objects
 			Stopper--used to stop everything
@@ -129,12 +130,15 @@ class threadFunctions(object):
 		self.printStopper = False
 	
 	def printThis(self, message, type = None):
-		print("in printthis " + str(message))
-		""" currently going to be used as a form of lock without actually using locks 
+		""" Currently going to be used as a form of lock without actually using locks 
 		(because locks are scary)"""
+		
+		# Wait for printing to be available again
 		while self.printStopper:
 			pass
-		if type == "input": #this is only if it is rawinput
+		
+		# Now do the actual printing
+		if type == "input": # This is only if it is user-typed input
 				self.printStopper = True
 				input = raw_input(message)
 				self.printStopper = False
@@ -147,7 +151,7 @@ class threadFunctions(object):
 	
 
 	def checkIfNew(self,newPeer):
-		"""Supposed to check if a given peer is known/already on the peerlist"""
+		""" Check whether a given peer is known (already in the peerlist). """
 		check = 0
 		for knownPeers in list(self.peerList): #casting to a list so we don't have
 		# errors with multiple threads
@@ -157,9 +161,9 @@ class threadFunctions(object):
 			return True
 		else:
 			return False
-				
+	
 	def connector(self,myIP, port):
-		"""Goes through the list of peers and attempts to create a socket object to connect
+		""" Goes through the list of peers and attempts to create a socket object to connect
 		for them (for any peers that do not currently have a socket already)
 		"""
 		while not self.Stopper:
@@ -188,9 +192,9 @@ class threadFunctions(object):
 				if peers.hasSock == True: # To me: don't you dare change this to if peers.hasSock: actually this one should work but still...
 					message = peers.receive()
 					if isinstance(message,peer):
-						newPeer = peer(message.IP,message.port) # think this is the line that is the problem
+						newPeer = peer(message.IP,message.port) # Think this is the line that is the problem
 						message = [newPeer] 
-						#If they just sent me themselves I still want to check if
+						# If they just sent me themselves I still want to check if
 						# I have them already, and I'm basically double checking that 
 						# they didn't have a sock by making a new one, and making the list 
 						# just that new one
@@ -204,8 +208,8 @@ class threadFunctions(object):
 					
 					
 	def transmitter(self):
-		"""Goes through the list of peers and sends the message to them...
-		"""
+		""" Goes through the list of peers and sends the message to them...	"""
+		
 		sendMessage = ""
 		while sendMessage != "/exit":
 			sendMessage = self.printThis("message> ","input")
@@ -213,15 +217,17 @@ class threadFunctions(object):
 				if peers.hasSock == True: # To me: don't you dare change this to if peers.hasSock: actually this one should work but still...
 					peers.send(sendMessage)
 		self.Stopper = True
-
+	
+	
+	
 	def acceptor(self,myIP, port):
-		"""Waits for incoming connections and appends the new peers to list, personally I feel
-		this is likely to be the largest part of my error...
-		I think using the address from the new connection does not work/give the send address
-		I'm probably going to have a version where I can connect it as a peer and not have a port
-		then on receive end have a new type int where it will send its port number, but that's
-		annoying... But I think this is currently what's messing it up...
-		"""
+		""" Waits for incoming connections and appends the new peers to list. """
+		# Personally I feel	this is likely to be the largest part of my error...
+		# I think using the address from the new connection does not work/give the send address
+		# I'm probably going to have a version where I can connect it as a peer and not have a port
+		# then on receive end have a new type int where it will send its port number, but that's
+		# annoying... But I think this is currently what's messing it up...
+		
 		serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		serverSocket.bind((myIP,port))
 		serverSocket.listen(0)
@@ -242,17 +248,21 @@ class threadFunctions(object):
 
 def getPort():
 	return int(raw_input("Please enter the port number: "))
+
+
 def getIP():
-	# http://stackoverflow.com/questions/166506/finding-local-ip-addresses-using-pythons-stdlib
+	""" Attempts to autodetect the user's LAN IP address, and falls back to manual
+	entry when autodetect fails.
+	
+	See http://stackoverflow.com/questions/166506 for details. """
+	
+	# Send a packet to google who will reply to our IP
 	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-	s.connect(('google.com', 53))
-    
+	s.connect(('google.com', 53))    
 	IP = s.getsockname()[0]
 	
-	
-	
-    # We need to find all cases of wrong IPs 
-	while IP[0:2] == "127" or IP == '':
+  # Make sure the detected IP looks valid, and if not fallback
+	while IP[0:3] == "127" or IP == '':
 		IP = raw_input("Unable to detect IP adress, please manually type your local IP in: ")
     
 	print("Proposed IP is: {}".format(IP))
@@ -296,13 +306,13 @@ acceptorThread.start()
 receiverThread.start()
 connectorThread.start()
 
-print("about to call transmitter")
-test.transmitter() #running the transmitter on the main thread
+# Running the transmitter on the main thread
+test.transmitter()
 
 # This should hopefully close a little nicer...
 for peers in test.peerList():
 	if peers.hasSock:
-		peers.hasSock = False #doing this before to try to prevent an error
+		peers.hasSock = False # Doing this before to try to prevent an error
 		# peers.send() need to send something to initiate shutdown
 		peers.Sock.shutdown(socket.SHUT_RDWR)
 		peers.Sock.close()
