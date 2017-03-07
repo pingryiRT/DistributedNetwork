@@ -68,6 +68,21 @@ class peer(object):
 			self.hasSock = False
 	
 	
+	def __str__(self):
+		"""
+		Returns a string representation of this peer including IPv4 address and whether a socket exists.
+		
+		Example with a socket:  Peer@192.168.1.4(S)
+		Example without socket: Peer@192.168.1.4
+		"""
+		
+		text = "Peer@" + self.IP
+		if self.hasSock:
+			text += "(S)"
+		
+		return text
+	
+	
 	def sendable(self):
 		""" Returns an instance of peer that is this peer, but a sendable version ie no socket"""
 		return peer(self.IP,self.port)
