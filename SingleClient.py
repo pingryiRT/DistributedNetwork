@@ -1,4 +1,4 @@
-import socket
+dimport socket
 import sys
 import pickle
 import threading
@@ -13,7 +13,7 @@ import threading
 class myThread(threading.Thread):
 	""" Class used for overriding the default thread constructor, and running each thread.
 	Constructor:
-	type--String the type of the thread to be used in determining which function it should initiate.
+	type--String the type of the thread to be used in determining which function it 																																																																																																																																																																																													````````````````````````````````````````````````````should initiate.
 	myIP--String the IP of this peer.
 	port--the int port of this peer (the one that other peers will use as the second portion of 
 	the connect)
@@ -240,8 +240,9 @@ class threadFunctions(object):
 			#print("Accepted connection from {}".format(clientAddress))			
 	
 
-def getPort():
-	return int(raw_input("Please enter the port number: "))
+#def getPort():
+#	return int(raw_input("Please enter the port number: "))
+	
 def getIP():
 	# http://stackoverflow.com/questions/166506/finding-local-ip-addresses-using-pythons-stdlib
 	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -257,7 +258,7 @@ def getIP():
     
 	print("Proposed IP is: {}".format(IP))
     
-	response = raw_input("If you would like to use a different IP please type it here or press enter to continue")
+	response = raw_input("If you would like to use a different IP please type it here or press enter to continue: ")
 	if response == "":
 		return IP 
 	return response
@@ -277,33 +278,40 @@ port = getPort();
 
 myIP = getIP()
 
-print("Peer's port")
-peerOnePort = getPort()
-print("Same Peer's IP: ")
-peerOneIP = getIP()
+choice = raw_input("Type y then enter if you are starting a new network: ");
+if choice == "y":
+	serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	serverSocket.bind((host, port))
+	print("Waiting for clients to connect")
+	serverSocket.listen(0)
+else:
+	print("Peer's port")
+	peerOnePort = getPort()
+	print("Same Peer's IP: ")
+	peerOneIP = getIP()
 
-peerOne = peer(peerOneIP,peerOnePort)
+	peerOne = peer(peerOneIP,peerOnePort)
 
-test = threadFunctions()
-test.peerList.append(peerOne)
+	test = threadFunctions()
+	test.peerList.append(peerOne)
 
-# This is initializing and starting (it works as it is, the functions themselves are what 
-# aren't working right now...)
-acceptorThread = myThread("acceptor",myIP,port,test)
-receiverThread = myThread("receiver",myIP,port,test)
-connectorThread = myThread("connector", myIP, port,test)
-acceptorThread.start()
-receiverThread.start()
-connectorThread.start()
+	# This is initializing and starting (it works as it is, the functions themselves are what 
+	# aren't working right now...)
+	acceptorThread = myThread("acceptor",myIP,port,test)
+	receiverThread = myThread("receiver",myIP,port,test)
+	connectorThread = myThread("connector", myIP, port,test)
+	acceptorThread.start()
+	receiverThread.start()
+	connectorThread.start()
 
-print("about to call transmitter")
-test.transmitter() #running the transmitter on the main thread
-
-# This should hopefully close a little nicer...
-for peers in test.peerList():
-	if peers.hasSock:
-		peers.hasSock = False #doing this before to try to prevent an error
-		# peers.send() need to send something to initiate shutdown
-		peers.Sock.shutdown(socket.SHUT_RDWR)
-		peers.Sock.close()
+	print("about to call transmitter")
+	test.transmitter() #running the transmitter on the main thread
+	
+	# This should hopefully close a little nicer...
+	for peers in test.peerList():
+		if peers.hasSock:
+			peers.hasSock = False #doing this before to try to prevent an error
+			# peers.send() need to send something to initiate shutdown
+			peers.Sock.shutdown(socket.SHUT_RDWR)
+			peers.Sock.close()
 		
