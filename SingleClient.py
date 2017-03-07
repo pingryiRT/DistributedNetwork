@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-dimport socket
-import sys
-=======
 import socket
->>>>>>> 2a552e201d9f1f3a550f598d5d4c771305d1ad4d
 import pickle
 import threading
 
@@ -263,16 +258,10 @@ class threadFunctions(object):
 			#print("Accepted connection from {}".format(clientAddress))			
 	
 
-<<<<<<< HEAD
-#def getPort():
-#	return int(raw_input("Please enter the port number: "))
-	
-=======
 def getPort():
 	return int(raw_input("Please enter the port number: "))
 
 
->>>>>>> 2a552e201d9f1f3a550f598d5d4c771305d1ad4d
 def getIP():
 	""" Attempts to autodetect the user's LAN IP address, and falls back to manual
 	entry when autodetect fails.
@@ -310,25 +299,21 @@ port = getPort();
 
 myIP = getIP()
 
+test = threadFunctions()
 choice = raw_input("Type y then enter if you are starting a new network: ");
-if choice == "y":
-	serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	serverSocket.bind((host, port))
-	print("Waiting for clients to connect")
-	serverSocket.listen(0)
-else:
+if choice != "y":
 	print("Peer's port")
 	peerOnePort = getPort()
 	print("Same Peer's IP: ")
 	peerOneIP = getIP()
 
 	peerOne = peer(peerOneIP,peerOnePort)
-
-	test = threadFunctions()
 	test.peerList.append(peerOne)
+	
 
 # This is initializing and starting (it works as it is, the functions themselves are what 
 # aren't working right now...)
+
 acceptorThread = myThread("acceptor",myIP,port,test)
 receiverThread = myThread("receiver",myIP,port,test)
 connectorThread = myThread("connector",myIP,port,test)
