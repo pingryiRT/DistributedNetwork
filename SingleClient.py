@@ -259,10 +259,20 @@ class threadFunctions(object):
 	
 
 def getPort():
-	return int(raw_input("Please enter the port number: "))
+	"""
+	Interactively determine a port. Proposes default of 12345, but allows overriding.
+	"""
+	
+	port = raw_input("Default port: 12345. Enter to continue or type an alternate. ")
+	
+	if port == "":
+		return 12345
+	
+	return int(port)
 
 
-def getIP():
+
+def getOwnIP():
 	""" Attempts to autodetect the user's LAN IP address, and falls back to manual
 	entry when autodetect fails.
 	
@@ -277,15 +287,16 @@ def getIP():
 	while IP[0:3] == "127" or IP == '':
 		IP = raw_input("Unable to detect IP adress, please manually type your local IP in: ")
     
-	print("Proposed IP is: {}".format(IP))
     
-	response = raw_input("If you would like to use a different IP please type it here or press enter to continue: ")
+	response = raw_input("Proposed IP: {}. Enter to continue or type an alternate. ".format(IP))
+	
 	if response == "":
 		return IP 
 	return response
     
 	
-	
+
+#TODO We should have a separate validateIP function to call from getOwnIP and elsewhere as needed.
 	
 	
 	
@@ -294,18 +305,20 @@ def getIP():
 
 ################################## MAIN PROGRAM BELOW ##################################
 
-# print("Your port: ")
-port = getPort();
+print("\nI'll need your IP address.")
+myIP = getOwnIP()
+print("\nI'll need your port.")
+myPort = getPort()
 
-myIP = getIP()
 
 test = threadFunctions()
 choice = raw_input("Type y then enter if you are starting a new network: ");
 if choice != "y":
-	print("Peer's port")
+	print("\nI'll need your first peer's IP")
+	peerOneIP = raw_input("Enter it here: ")
+
+	print("\nI'll need the same peer's port")
 	peerOnePort = getPort()
-	print("Same Peer's IP: ")
-	peerOneIP = getIP()
 
 	peerOne = peer(peerOneIP,peerOnePort)
 	test.peerList.append(peerOne)
@@ -313,10 +326,9 @@ if choice != "y":
 
 # This is initializing and starting (it works as it is, the functions themselves are what 
 # aren't working right now...)
-
-acceptorThread = myThread("acceptor",myIP,port,test)
-receiverThread = myThread("receiver",myIP,port,test)
-connectorThread = myThread("connector",myIP,port,test)
+acceptorThread = myThread("acceptor",myIP,myPort,test)
+receiverThread = myThread("receiver",myIP,myPort,test)
+connectorThread = myThread("connector", myIP, myPort,test)
 acceptorThread.start()
 receiverThread.start()
 connectorThread.start()
