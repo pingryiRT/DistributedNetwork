@@ -345,7 +345,7 @@ test.transmitter()
 
 
 # This should hopefully close a little nicer...
-for peers in test.peerList():
+for peers in test.peerList:
 	if peers.hasSock:
 		peers.hasSock = False # Doing this before to try to prevent an error
 		# peers.send() need to send something to initiate shutdown
