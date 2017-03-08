@@ -83,6 +83,21 @@ class peer(object):
 		return text
 	
 	
+	
+	def __eq__(self, other):
+	  """ Compares this peer to another peer for equality. (for == operator) """
+	  
+	  return self.IP == other.IP and self.port == other.port
+	
+	
+	def __neq__(self, other):
+	  """ Compares the peer to another peer for inequality. (for != operator) """
+	  
+	  return not self == other
+	
+	
+	
+	
 	def sendable(self):
 		""" Returns an instance of peer that is this peer, but a sendable version ie no socket"""
 		return peer(self.IP,self.port)
@@ -164,17 +179,6 @@ class threadFunctions(object):
 				self.printStopper = False
 			
 	
-
-#	def checkIfNew(self,newPeer):
-#		""" Check whether a given peer is known (already in the peerlist). """
-#		
-#		check = False
-#		for knownPeer in self.peerList:
-#			if newPeer.IP == knownPeer.IP and newPeer.port == knownPeer.port:
-#					check = True
-#		return check
-
-
 	
 	def connector(self,myIP, port):
 		""" Goes through the list of peers and attempts to create a socket object to connect
