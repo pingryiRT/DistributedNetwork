@@ -173,6 +173,8 @@ class threadFunctions(object):
 #			if newPeer.IP == knownPeer.IP and newPeer.port == knownPeer.port:
 #					check = True
 #		return check
+
+
 	
 	def connector(self,myIP, port):
 		""" Goes through the list of peers and attempts to create a socket object to connect
@@ -330,6 +332,9 @@ if adamNode != "y":
 acceptorThread = myThread("acceptor",myIP,myPort,test)
 receiverThread = myThread("receiver",myIP,myPort,test)
 connectorThread = myThread("connector", myIP, myPort,test)
+acceptorThread.setDaemon(True)
+receiverThread.setDaemon(True)
+connectorThread.setDaemon(True)
 acceptorThread.start()
 receiverThread.start()
 connectorThread.start()
