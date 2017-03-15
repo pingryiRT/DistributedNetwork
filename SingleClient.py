@@ -103,17 +103,6 @@ class peer(object):
 		return peer(self.IP,self.port)
 	
 	
-	def sendPeer(self,sendToPeer):
-		""" Used for just sending this peer to another node. """
-		#not super necessary, I kind of wanted a different message for when just sending the
-		#peer though...
-		sendable = self.sendable()
-		try:
-			sendToPeer.Sock.send(pickle.dumps(sendable))
-		except socket.error:
-			print("error sending peer " + str((self.IP,self.port)) + " to " + str((sendToPeer.IP,sendToPeer.port)) + ".")
-	
-	
 	def send(self,message):
 		""" Send a message to this peer. """
 		if self.hasSock == True:
@@ -195,7 +184,7 @@ class threadFunctions(object):
 						peers.addSock(sock)
 						self.printThis("connected to " + peers.IP)
 						mePeer = peer(myIP,port)
-						mePeer.sendPeer(peers)
+						peers.send([mePeer])
 					except socket.error:
 						self.printThis("Couldn't connect to peer " + str((peers.IP,peers.port)))
 						pass
@@ -209,13 +198,6 @@ class threadFunctions(object):
 			for peers in list(self.peerList):
 				if peers.hasSock == True: # To me: don't you dare change this to if peers.hasSock: actually this one should work but still...
 					message = peers.receive()
-					if isinstance(message,peer):
-						newPeer = peer(message.IP,message.port) # Think this is the line that is the problem
-						message = [newPeer] 
-						# If they just sent me themselves I still want to check if
-						# I have them already, and I'm basically double checking that 
-						# they didn't have a sock by making a new one, and making the list 
-						# just that new one
 					if type(message) is list:
 						self.printThis("received peerlist: " + str(message) + " from " + str((peers.IP,peers.port)))
 						for newPeer in message:
