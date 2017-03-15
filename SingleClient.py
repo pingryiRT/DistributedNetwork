@@ -188,7 +188,7 @@ class threadFunctions(object):
 					except socket.error:
 						self.printThis("Couldn't connect to peer " + str((peers.IP,peers.port)))
 						pass
-			time.sleep(2)
+			time.sleep(2) #pauses for 2 seconds
 						
 										
 	def receiver(self):
