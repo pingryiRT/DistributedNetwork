@@ -1,7 +1,7 @@
 import socket
 import pickle
 import threading
-
+import time
 
 
 
@@ -60,7 +60,7 @@ class peer(object):
 		self.port = intPort
 			
 		# If a socet is provided, use it. Otherwise, document that.
-		#TODO Do we really need the bool hasSocket? Can't we just test for `self.socket is None`?
+		#TODO Do we really need the bool hasSocket? Can't we just test for `self.socket is None`? 
 		if Socket is not None:
 			self.Sock = Socket
 			self.hasSock = True 
@@ -70,13 +70,13 @@ class peer(object):
 	
 	def __str__(self):
 		"""
-		Returns a string representation of this peer including IPv4 address and whether a socket exists.
+		Returns a string representation of this peer including IPv4 address, port and whether a socket exists.
 		
-		Example with a socket:  Peer@192.168.1.4(S)
-		Example without socket: Peer@192.168.1.4
+		Example with a socket:  Peer@192.168.1.4 12345(S)
+		Example without socket: Peer@192.168.1.4 12345
 		"""
 		
-		text = "Peer@" + self.IP
+		text = "Peer@" + self.IP + " " + str(self.port)
 		if self.hasSock:
 			text += "(S)"
 		
@@ -151,7 +151,7 @@ class threadFunctions(object):
 	def printThis(self, message, type = None):
 		""" Currently going to be used as a form of lock without actually using locks 
 		(because locks are scary)"""
-		
+
 		# Wait for printing to be available again
 		while self.printStopper:
 			pass
@@ -188,6 +188,7 @@ class threadFunctions(object):
 					except socket.error:
 						self.printThis("Couldn't connect to peer " + str((peers.IP,peers.port)))
 						pass
+			time.sleep(2)
 						
 										
 	def receiver(self):
@@ -199,12 +200,17 @@ class threadFunctions(object):
 				if peers.hasSock == True: # To me: don't you dare change this to if peers.hasSock: actually this one should work but still...
 					message = peers.receive()
 					if type(message) is list:
-						self.printThis("received peerlist: " + str(message) + " from " + str((peers.IP,peers.port)))
+						messageStr = []
+						for peers in message:
+							messageStr.append(str(peers))
+						self.printThis("received peerlist: " + str(messageStr) + " from " + str((peers.IP,peers.port)))
 						for newPeer in message:
 							if newPeer not in self.peerList:
 								self.peerList.append(newPeer)			
 					else:
 						self.printThis("from " +  str((peers.IP,peers.port)) + ": " + str(message))
+			time.sleep(2)
+		
 					
 					
 	def transmitter(self):
@@ -216,7 +222,9 @@ class threadFunctions(object):
 			for peers in list(self.peerList):
 				if peers.hasSock == True: # To me: don't you dare change this to if peers.hasSock: actually this one should work but still...
 					peers.send(sendMessage)
+			time.sleep(2)
 		self.Stopper = True
+			
 	
 	
 	
@@ -243,6 +251,7 @@ class threadFunctions(object):
 			for peers in list(self.peerList):
 				toSendList.append(peers.sendable())
 			thisPeer.send(toSendList)
+			time.sleep(2)
 			#print("Accepted connection from {}".format(clientAddress))			
 	
 
