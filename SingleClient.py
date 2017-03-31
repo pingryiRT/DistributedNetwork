@@ -281,30 +281,37 @@ def getOwnIP():
 	IP = s.getsockname()[0]
 	
   # Make sure the detected IP looks valid, and if not fallback
-	while IP[0:3] == "127" or IP == '':
-		IP = raw_input("Unable to detect IP adress, please manually type your local IP in: ")
-    
-    
-	response = raw_input("Proposed IP: {}. Enter to continue or type an alternate. ".format(IP))
+	while not validateIP(IP):
+		IP = raw_input("Please enter a valid IP address: ")
 	
-	if response == "":
-		return IP 
-	return response
+	return IP
     
-	
-
 #TODO We should have a separate validateIP function to call from getOwnIP and elsewhere as needed.
+def validateIP(IP):
+	'''	Validates an IP address before joining network'''
+	sections = IP.split(".") #Creating sections list with IP address split up each period
 	
+	if len(sections) != 4: #Check for 3 periods
+		return False
 	
+	for section in sections:
+		if not section.isdigit(): #Making sure all contents are ints
+			return False
+		section = int(section)
+		if section < 0 or section > 255: #validate range of the number
+			return False
 	
+	if sections[0] == "127": #not loop-back address
+		return False
 	
+	return True
+				
 	
 
 ################################## MAIN PROGRAM BELOW ##################################
 
-print("\nI'll need your IP address.")
 myIP = getOwnIP()
-print("\nI'll need your port.")
+print("I'll need your port.")
 myPort = getPort()
 
 
