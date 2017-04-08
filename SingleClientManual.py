@@ -29,13 +29,13 @@ class myThread(threading.Thread):
 
 	def run(self):
 		if self.type  == "manualClient":
-			print("MC") # Test purposes, right now should get c r and a (t is the main thread)
+			#print("MC") # Test purposes, right now should get c r and a (t is the main thread)
 			self.instance.manualClient(self.myIP,self.port)
 		elif self.type == "receiver":
-			print("r")
+		#	print("r")
 			self.instance.receiver()
 		elif self.type == "acceptor":
-			print("a")
+			#print("a")
 			self.instance.acceptor(self.myIP, self.port)
 
 
@@ -57,7 +57,7 @@ class peer(object):
 		self.port = intPort
 		self.isBlocking = True
 			
-		# If a socet is provided, use it. Otherwise, document that.
+		# If a socket is provided, use it. Otherwise, document that.
 		#TODO Do we really need the bool hasSocket? Can't we just test for `self.socket is None`? 
 		if Socket is not None:
 			self.Sock = Socket
@@ -65,7 +65,7 @@ class peer(object):
 			
 		else:
 			self.hasSock = False
-	
+		self.name = None
 	
 	def __str__(self):
 		"""
@@ -174,30 +174,44 @@ class threadFunctions(object):
 		else:
 			return raw_input(message)
 			
-			
+		
 			
 	#one thread handling the send connect and accept, one handling the recv, one on auto accept
 	
 	def manualClient(self, myIP,port):
 		while not self.Stopper:
-			command = self.printThis("Please enter your command, '/send', '/connect', '/accept', '/init'",type = "input")
-			if command == "/send":
-				self.sender(myIP,port)
-			elif command == "/connect":
+			command = self.printThis("Please type your message, or enter a command, '/connect', '/accept', '/name', then hit enter:  \n",type = "input")
+
+			
+			if command == "/connect":
 				self.connector(myIP,port)
 			elif command == "/accept":
 				self.manualAcceptor(myIP,port)
-			elif command == "/init":
-				self.manualInit()	
+			elif command == "/name":
+				self.name(myIP,port)
+		#	elif command == "/init":
+		#		self.manualInit()
+			
+			else:
+				self.sender(myIP,port,command)	
+	
+	def name(self,myIP,port):
+		for peers in list(self.peerList):
+			print(str(peers) + " " + str(self.peerList.index(peers)))
+		index = self.printThis("Please enter the index of the peer you would like to name: \n", type = "input")
+		name = self.printThis("Please enter the name of the peer you would like to name: \n", type = "input")
+		self.peerList[int(index)].name= name
 		
+		
+			
 	def manualInit(self):
 		for peers in self.peerList:
 			if peers.isBlocking == True:
 				peers.Sock.setblocking(0)
 				self.printThis(str(peers) + " set to non blocking")
 				peers.isBlocking = False
-	def sender(self, myIP,port):
-		sendMessage = self.printThis("message> ",type = "input")
+	def sender(self, myIP,port, sendMessage):
+	
 		for peers in list(self.peerList):
 			if peers.hasSock == True: # To me: don't you dare change this to if peers.hasSock: actually this one should work but still...
 				peers.send(sendMessage)
@@ -277,7 +291,11 @@ class threadFunctions(object):
 						messageStr.append(str(peers))
 					self.printThis("received peerlist: " + str(messageStr) + " from " + str((peers.IP,peers.port)))			
 				else:
-					self.printThis("from " +  str((peers.IP,peers.port)) + ": " + str(message))
+					if peers.name != None:
+						self.printThis("from " +  peers.name + ": " + str(message))
+					else:
+						self.printThis("from " +  str((peers.IP,peers.port)) + ": " + str(message))
+					
 			time.sleep(2)
 
 def getPort():
@@ -363,7 +381,7 @@ receiverThread.start()
 #manualThread.start()
 
 # Running the transmitter on the main thread
-print("about to call transmitter")
+#print("about to call transmitter")
 #test.transmitter()
 test.manualClient(myIP,myPort)
 
