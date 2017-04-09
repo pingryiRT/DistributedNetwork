@@ -200,7 +200,7 @@ class threadFunctions(object):
 			print(str(peers) + " " + str(self.peerList.index(peers)))
 		index = self.printThis("Please enter the index of the peer you would like to name: \n", type = "input")
 		name = self.printThis("Please enter the name of the peer you would like to name: \n", type = "input")
-		self.peerList[int(index)].name= name
+		self.peerList[int(index)].name=name
 		
 		
 			
@@ -291,10 +291,12 @@ class threadFunctions(object):
 						messageStr.append(str(peers))
 					self.printThis("received peerlist: " + str(messageStr) + " from " + str((peers.IP,peers.port)))			
 				else:
-					if peers.name != None:
-						self.printThis("from " +  peers.name + ": " + str(message))
-					else:
-						self.printThis("from " +  str((peers.IP,peers.port)) + ": " + str(message))
+					for peers in list(self.peerList):
+						if peers.Sock == sockets:
+							if peers.name != None:
+								self.printThis("from " +  peers.name + ": " + str(message))
+							else:
+								self.printThis("from " +  str((peers.IP,peers.port)) + ": " + str(message))
 					
 			time.sleep(2)
 
