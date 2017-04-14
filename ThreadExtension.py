@@ -26,12 +26,12 @@ class myThread(threading.Thread):
 
 	def run(self):
 		if self.type  == "manualClient":
-			#print("MC") # Test purposes, right now should get c r and a (t is the main thread)
+			#print("DEBUG: ManualClient thread is running.")
 			self.instance.manualClient(self.myIP,self.port)
 		elif self.type == "receiver":
-		#	print("r")
+			#print("DEBUG: Receiver thread is running.")
 			self.instance.receiver()
 		elif self.type == "acceptor":
-			#print("a")
+			#print("DEBUG: Acceptor thread is running.")
 			self.instance.acceptor(self.myIP, self.port)
 
