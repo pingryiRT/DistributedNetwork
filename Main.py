@@ -1,9 +1,7 @@
 import socket
-import pickle
-import threading
 import select
 
-from ThreadExtension import myThread
+from WorkerThread import WorkerThread
 from ThreadFunctions import threadFunctions
 from Peer import peer
 
@@ -85,9 +83,9 @@ if adamNode != "y":
 
 # This is initializing and starting (it works as it is, the functions themselves are what 
 # aren't working right now...)
-acceptorThread = myThread("acceptor",myIP,myPort,test)
-receiverThread = myThread("receiver",myIP,myPort,test)
-#manualThread = myThread("manualClient", myIP, myPort,test)
+acceptorThread = WorkerThread("acceptor",myIP,myPort,test)
+receiverThread = WorkerThread("receiver",myIP,myPort,test)
+#manualThread = WorkerThread("manualClient", myIP, myPort,test)
 acceptorThread.setDaemon(True)
 receiverThread.setDaemon(True)
 #manualThread.setDaemon(True)
