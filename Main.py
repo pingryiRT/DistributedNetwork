@@ -1,7 +1,7 @@
 import socket
 
 from WorkerThread import WorkerThread
-from ThreadFunctions import threadFunctions
+from Network import Network
 from Peer import peer
 
 def getPort():
@@ -68,7 +68,7 @@ print("I'll need your port.")
 myPort = getPort()
 
 # Initialize a network
-myNetwork = threadFunctions()
+myNetwork = Network()
 adamNode = raw_input("Starting a new network? (y/N): ")
 
 # Add the first peer if the user wants one

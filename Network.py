@@ -5,11 +5,12 @@ import time
 
 from Peer import peer
 
-class threadFunctions(object):
-	"""threadFunctions (probably a bad name) that the threads run the chatclient
-	this is where the work gets done (think of an instance of this as a chatclient network
-	although will mainly be usable for multiple instances only if you want to connect to 
-	multiple networks and keep them separate in the future
+class Network(object):
+	""" A connection to a chatclient network.
+	
+	A single instance of this class is sufficient for typical usage, although 
+	multiple instances may be useful if you want to connect to multiple networks
+	and keep them separate in the future, or simultaneously connect as multiple identities.
 	"""
 	
 	#TODO This feels fairly sloppy, but oh well... If someone wants to make a branch to make it
