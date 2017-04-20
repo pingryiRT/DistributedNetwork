@@ -1,7 +1,7 @@
 import socket
 import pickle
 
-class peer(object):
+class Peer(object):
 	"""The peer object, represents a peer on the network, and has fields:
 	stringIP--the IP address of the peer
 	intPort--the port of the peer to connect to

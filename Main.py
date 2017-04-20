@@ -2,7 +2,7 @@ import socket
 
 from WorkerThread import WorkerThread
 from Network import Network
-from Peer import peer
+from Peer import Peer
 
 def getPort():
 	"""
@@ -79,7 +79,7 @@ if adamNode == "" or adamNode[0].lower()!= "y":
 	print("\nI'll need the same peer's port")
 	peerOnePort = getPort()
 
-	peerOne = peer(peerOneIP,peerOnePort)
+	peerOne = Peer(peerOneIP,peerOnePort)
 	myNetwork.peerList.append(peerOne)
 	
 

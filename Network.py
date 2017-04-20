@@ -3,7 +3,7 @@ import pickle
 import select
 import time
 
-from Peer import peer
+#from Peer import Peer
 
 class Network(object):
 	""" A connection to a chatclient network.
@@ -16,7 +16,7 @@ class Network(object):
 	#TODO This feels fairly sloppy, but oh well... If someone wants to make a branch to make it
 	# less sloppy feel free to
 	def __init__(self):
-		"""peerList--a list of all the current peer objects
+		"""peerList--a list of all the current Peer objects
 			Stopper--used to stop everything
 			printStopper--used as a poor-man's lock object to control printing output 
 		"""
