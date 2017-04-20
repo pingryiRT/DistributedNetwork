@@ -83,21 +83,12 @@ if adamNode == "" or adamNode[0].lower()!= "y":
 	myNetwork.peerList.append(peerOne)
 	
 
-# This is initializing and starting (it works as it is, the functions themselves are what 
-# aren't working right now...)
-acceptorThread = WorkerThread("acceptor", myIP, myPort, myNetwork)
-receiverThread = WorkerThread("receiver", myIP, myPort, myNetwork)
-#manualThread = WorkerThread("manualClient", myIP, myPort, myNetwork)
-acceptorThread.setDaemon(True)
-receiverThread.setDaemon(True)
-#manualThread.setDaemon(True)
-acceptorThread.start()
-receiverThread.start()
-#manualThread.start()
+# Initialize and start the threads
+WorkerThread("acceptor", myIP, myPort, myNetwork).start()
+WorkerThread("receiver", myIP, myPort, myNetwork).start()
+#WorkerThread("manualClient", myIP, myPort, myNetwork).start()
 
 # Running the transmitter on the main thread
-#print("about to call transmitter")
-#myNetwork.transmitter()
 myNetwork.manualClient(myIP,myPort)
 
 # This should hopefully close a little nicer...

@@ -22,6 +22,9 @@ class WorkerThread(Thread):
     self.myIP = myIP
     self.port = port
     self.network = network
+    
+    # Make this thread a daemon so the terminal doesn't hang on keyboard interrupt.
+    self.setDaemon(True)
 
   def run(self):
     """ Determine which function this thread should run, and make it happen it. """
