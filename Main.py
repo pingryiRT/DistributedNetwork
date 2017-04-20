@@ -68,9 +68,9 @@ myPort = getPort()
 
 
 test = threadFunctions()
-adamNode = raw_input("Starting a new network? (y/n): ")[0].lower()
+adamNode = raw_input("Starting a new network? (y/N): ")
 
-if adamNode != "y":
+if adamNode == "" or adamNode[0].lower()!= "y":
 	print("\nI'll need your first peer's IP")
 	peerOneIP = raw_input("Enter it here: ")
 
