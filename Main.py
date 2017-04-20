@@ -1,5 +1,4 @@
 import socket
-import select
 
 from WorkerThread import WorkerThread
 from ThreadFunctions import threadFunctions
@@ -12,7 +11,7 @@ def getPort():
 	
 	DEFAULT = 12345
 	
-	port = raw_input("Default port: " + DEFAULT + ". Enter to continue or type an alternate. ")
+	port = raw_input("Default port: {}. Enter to continue or type an alternate. ".format(DEFAULT))
 	
 	if port == "":
 		return DEFAULT
