@@ -23,6 +23,7 @@ class WorkerThread(Thread):
     self.myIP = myIP
     self.port = port
     self.network = network
+    self.debug = debug
     
     # Make this thread a daemon so the terminal doesn't hang on keyboard interrupt.
     self.setDaemon(True)
@@ -31,17 +32,17 @@ class WorkerThread(Thread):
     """ Determine which function this thread should run, and make it happen it. """
     
     if self.kind  == "manualClient":
-      if debug:
+      if self.debug:
         print("DEBUG: ManualClient thread is running.")
       self.network.manualClient(self.myIP,self.port)
       
     elif self.kind == "receiver":
-      if debug:
+      if self.debug:
         print("DEBUG: Receiver thread is running.")
       self.network.receiver()
       
     elif self.kind == "acceptor":
-      if debug:
+      if self.debug:
         print("DEBUG: Acceptor thread is running.")
       self.network.acceptor(self.myIP, self.port)
 
