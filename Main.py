@@ -7,13 +7,15 @@ from Peer import peer
 
 def getPort():
 	"""
-	Interactively determine a port. Proposes default of 12345, but allows overriding.
+	Interactively determine a port. Proposes default, but allows overriding.
 	"""
 	
-	port = raw_input("Default port: 12345. Enter to continue or type an alternate. ")
+	DEFAULT = 12345
+	
+	port = raw_input("Default port: " + DEFAULT + ". Enter to continue or type an alternate. ")
 	
 	if port == "":
-		return 12345
+		return DEFAULT
 	
 	return int(port)
 
