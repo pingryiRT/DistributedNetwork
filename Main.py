@@ -68,10 +68,11 @@ print ("Detected IP: " + myIP)
 print("I'll need your port.")
 myPort = getPort()
 
-
-test = threadFunctions()
+# Initialize a network
+myNetwork = threadFunctions()
 adamNode = raw_input("Starting a new network? (y/N): ")
 
+# Add the first peer if the user wants one
 if adamNode == "" or adamNode[0].lower()!= "y":
 	print("\nI'll need your first peer's IP")
 	peerOneIP = raw_input("Enter it here: ")
@@ -80,14 +81,14 @@ if adamNode == "" or adamNode[0].lower()!= "y":
 	peerOnePort = getPort()
 
 	peerOne = peer(peerOneIP,peerOnePort)
-	test.peerList.append(peerOne)
+	myNetwork.peerList.append(peerOne)
 	
 
 # This is initializing and starting (it works as it is, the functions themselves are what 
 # aren't working right now...)
-acceptorThread = WorkerThread("acceptor",myIP,myPort,test)
-receiverThread = WorkerThread("receiver",myIP,myPort,test)
-#manualThread = WorkerThread("manualClient", myIP, myPort,test)
+acceptorThread = WorkerThread("acceptor", myIP, myPort, myNetwork)
+receiverThread = WorkerThread("receiver", myIP, myPort, myNetwork)
+#manualThread = WorkerThread("manualClient", myIP, myPort, myNetwork)
 acceptorThread.setDaemon(True)
 receiverThread.setDaemon(True)
 #manualThread.setDaemon(True)
@@ -97,11 +98,11 @@ receiverThread.start()
 
 # Running the transmitter on the main thread
 #print("about to call transmitter")
-#test.transmitter()
-test.manualClient(myIP,myPort)
+#myNetwork.transmitter()
+myNetwork.manualClient(myIP,myPort)
 
 # This should hopefully close a little nicer...
-for peers in test.peerList:
+for peers in myNetwork.peerList:
 	if peers.hasSock:
 		peers.hasSock = False # Doing this before to try to prevent an error
 		# peers.send() need to send something to initiate shutdown
