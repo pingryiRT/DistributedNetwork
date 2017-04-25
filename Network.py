@@ -3,7 +3,7 @@ import pickle
 import select
 import time
 
-#from Peer import Peer
+from Peer import Peer
 
 class Network(object):
 	""" A connection to a chatclient network.
@@ -133,7 +133,7 @@ class Network(object):
 		while not self.Stopper:
 			clientSocket, clientAddress = serverSocket.accept() # this section is the problem
 			#print(str(clientSocket.getpeername()) + str(type(clientSocket.getpeername())) )
-			thisPeer = peer(clientAddress[0],Socket = clientSocket)
+			thisPeer = Peer(clientAddress[0],Socket = clientSocket)
 		#	message = "0"
 		#	while int(message) == 0:
 		#		message = thisPeer.receive()
