@@ -97,15 +97,15 @@ class Network(object):
 		if new == "y":
 			peerIP = self.printThis("Please enter the new peer's IP: ", type = "input")
 			peerPort = int(self.printThis("Please enter the new peer's port: ", type = "input"))
-			newPeer = peer(peerIP, intPort = peerPort)
+			newPeer = Peer(peerIP, intPort = peerPort)
 			self.peerList.append(newPeer)
 		elif new == "n":
 			strPeerList = []
 			for peers in self.peerList:
 				strPeerList.append(str(peers))
-			peerIndex = self.printThis("Please identify the peer's index: ", type = "input")
+			peerIndex = int(self.printThis("Please identify the peer's index: ", type = "input"))
 			if self.peerList[peerIndex].port == None:
-				peerPort = printThis("Please enter the peer's port: ", type = "input")
+				peerPort = int(printThis("Please enter the peer's port: ", type = "input"))
 			newPeer = self.peerList[peerIndex]
 		
 				
