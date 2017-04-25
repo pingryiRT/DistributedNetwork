@@ -142,7 +142,7 @@ class Network(object):
 		#	while int(message) == 0:
 		#		message = thisPeer.receive()
 		#	thisPeer.port = int(message)
-			if thisPeer not in self.peerList and thisPeer not in self.unconfirmedList:
+			if thisPeer not in self.unconfirmedList:
 				self.unconfirmedList.append(thisPeer)
 			time.sleep(1)
 			#print("Accepted connection from {}".format(clientAddress))	
