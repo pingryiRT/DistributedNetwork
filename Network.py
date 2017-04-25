@@ -120,10 +120,14 @@ class Network(object):
 	#	self.manualClient(myIP,port)
 	
 	def manualAcceptor(self,myIP, port):
-		for peers in self.unconfirmedList:
-			input = self.printThis("y/n to add: " + str(peers) + " ", type = "input")
+		i = 0
+		while i < len(self.unconfirmedList):
+			peer = self.unconfirmedList[i]
+			input = self.printThis("y/n to add: " + str(peer) + " ", type = "input")
 			if input == "y":
-				self.peerList.append(peers)
+				self.peerList.append(peer)
+				self.unconfirmedList.remove(peer)
+
 	#	self.manualClient(myIP,port)
 				
 	def acceptor(self,myIP, port):
