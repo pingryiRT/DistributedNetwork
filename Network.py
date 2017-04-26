@@ -117,12 +117,12 @@ class Network(object):
 				
 		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		try:
-			sock.connect((newPeer.ip, newPeer.port))
+			sock.connect((newPeer.IP, newPeer.port))
 			newPeer.addSock(sock)
-			self.printThis("connected to " + newPeer.ip)
+			self.printThis("connected to " + newPeer.IP)
 			newPeer.send(self.port)
 		except socket.error:
-			self.printThis("Couldn't connect to peer " + str((newPeer.ip, newPeer.port)))
+			self.printThis("Couldn't connect to peer " + str((newPeer.IP, newPeer.port)))
 	#	self.manualClient(self.ip, self.port)
 	
 	def manualAcceptor(self):
