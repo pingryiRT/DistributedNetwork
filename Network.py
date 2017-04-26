@@ -15,15 +15,21 @@ class Network(object):
 	
 	#TODO This feels fairly sloppy, but oh well... If someone wants to make a branch to make it
 	# less sloppy feel free to
-	def __init__(self):
-		"""peerList--a list of all the current Peer objects
-			Stopper--used to stop everything
-			printStopper--used as a poor-man's lock object to control printing output 
+	def __init__(self, ip, port):
 		"""
+		peerList -- a list of all the current Peer objects
+		Stopper -- used to stop everything
+		printStopper -- used as a poor-man's lock object to control printing output 
+		ip -- This hosts own IP address as seen by peers on the network
+		port -- The port on which this host is running a server
+		"""
+		
 		self.unconfirmedList = []
 		self.peerList = []
 		self.Stopper = False
 		self.printStopper = False
+		self.ip = ip
+		self.port = port
 	
 	"""def printThis(self, message, type = None):
 		 Currently going to be used as a form of lock without actually using locks 
@@ -53,24 +59,24 @@ class Network(object):
 			
 	#one thread handling the send connect and accept, one handling the recv, one on auto accept
 	
-	def manualClient(self, myIP,port):
+	def manualClient(self):
 		while not self.Stopper:
 			command = self.printThis("Please type your message, or enter a command, '/connect', '/accept', '/name', then hit enter:  \n",type = "input")
 
 			
 			if command == "/connect":
-				self.connector(myIP,port)
+				self.connector()
 			elif command == "/accept":
-				self.manualAcceptor(myIP,port)
+				self.manualAcceptor()
 			elif command == "/name":
-				self.name(myIP,port)
+				self.name()
 		#	elif command == "/init":
 		#		self.manualInit()
 			
 			else:
-				self.sender(myIP,port,command)	
+				self.sender(command)
 	
-	def name(self,myIP,port):
+	def name(self):
 		for peers in list(self.peerList):
 			print(str(peers) + " " + str(self.peerList.index(peers)))
 		index = self.printThis("Please enter the index of the peer you would like to name: \n", type = "input")
@@ -85,14 +91,14 @@ class Network(object):
 				peers.Sock.setblocking(0)
 				self.printThis(str(peers) + " set to non blocking")
 				peers.isBlocking = False
-	def sender(self, myIP,port, sendMessage):
+	def sender(self, sendMessage):
 	
 		for peers in list(self.peerList):
 			if peers.hasSock == True: # To me: don't you dare change this to if peers.hasSock: actually this one should work but still...
 				peers.send(sendMessage)
-		self.manualClient(myIP,port)
+		self.manualClient()
 		
-	def connector(self,myIP,port):
+	def connector(self):
 		new = self.printThis("Is this a new peer? y/n ", type = "input")
 		if new == "y":
 			peerIP = self.printThis("Please enter the new peer's IP: ", type = "input")
@@ -111,15 +117,15 @@ class Network(object):
 				
 		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		try:
-			sock.connect((newPeer.IP,newPeer.port))
+			sock.connect((newPeer.ip, newPeer.port))
 			newPeer.addSock(sock)
-			self.printThis("connected to " + newPeer.IP)
-			newPeer.send(port)
+			self.printThis("connected to " + newPeer.ip)
+			newPeer.send(self.port)
 		except socket.error:
-			self.printThis("Couldn't connect to peer " + str((newPeer.IP,newPeer.port)))
-	#	self.manualClient(myIP,port)
+			self.printThis("Couldn't connect to peer " + str((newPeer.ip, newPeer.port)))
+	#	self.manualClient(self.ip, self.port)
 	
-	def manualAcceptor(self,myIP, port):
+	def manualAcceptor(self):
 		i = 0
 		while i < len(self.unconfirmedList):
 			peer = self.unconfirmedList[i]
@@ -128,11 +134,11 @@ class Network(object):
 				self.peerList.append(peer)
 				self.unconfirmedList.remove(peer)
 
-	#	self.manualClient(myIP,port)
+	#	self.manualClient()
 				
-	def acceptor(self,myIP, port):
+	def acceptor(self):
 		serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		serverSocket.bind((myIP,port))
+		serverSocket.bind((self.ip, self.port))
 		serverSocket.listen(0)
 		while not self.Stopper:
 			clientSocket, clientAddress = serverSocket.accept() # this section is the problem
@@ -168,13 +174,13 @@ class Network(object):
 					messageStr = []
 					for peers in message:
 						messageStr.append(str(peers))
-					self.printThis("received peerlist: " + str(messageStr) + " from " + str((peers.IP,peers.port)))			
+					self.printThis("received peerlist: " + str(messageStr) + " from " + str((peers.ip, peers.port)))
 				else:
 					for peers in list(self.peerList):
 						if peers.Sock == sockets:
 							if peers.name != None:
 								self.printThis("from " +  peers.name + ": " + str(message))
 							else:
-								self.printThis("from " +  str((peers.IP,peers.port)) + ": " + str(message))
+								self.printThis("from " +  str((peers.ip,peers.port)) + ": " + str(message))
 					
 			time.sleep(2)

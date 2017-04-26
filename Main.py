@@ -68,7 +68,7 @@ print("I'll need your port.")
 myPort = getPort()
 
 # Initialize a network
-myNetwork = Network()
+myNetwork = Network(myIP, myPort)
 adamNode = raw_input("Starting a new network? (y/N): ")
 
 # Add the first peer if the user wants one
@@ -84,12 +84,12 @@ if adamNode == "" or adamNode[0].lower()!= "y":
 	
 
 # Initialize and start the threads
-WorkerThread("acceptor", myIP, myPort, myNetwork).start()
-WorkerThread("receiver", myIP, myPort, myNetwork).start()
-#WorkerThread("manualClient", myIP, myPort, myNetwork).start()
+WorkerThread("acceptor", myNetwork).start()
+WorkerThread("receiver", myNetwork).start()
+#WorkerThread("manualClient", myNetwork).start()
 
 # Running the transmitter on the main thread
-myNetwork.manualClient(myIP,myPort)
+myNetwork.manualClient()
 
 # This should hopefully close a little nicer...
 for peers in myNetwork.peerList:
