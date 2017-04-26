@@ -54,28 +54,9 @@ class Network(object):
 			print(message)
 		else:
 			return raw_input(message)
-			
-		
-			
-	#one thread handling the send connect and accept, one handling the recv, one on auto accept
-	
-	def manualClient(self):
-		while not self.Stopper:
-			command = self.printThis("Please type your message, or enter a command, '/connect', '/accept', '/name', then hit enter:  \n",type = "input")
 
-			
-			if command == "/connect":
-				self.connector()
-			elif command == "/accept":
-				self.manualAcceptor()
-			elif command == "/name":
-				self.name()
-		#	elif command == "/init":
-		#		self.manualInit()
-			
-			else:
-				self.sender(command)
-	
+
+
 	def name(self):
 		for peers in list(self.peerList):
 			print(str(peers) + " " + str(self.peerList.index(peers)))
@@ -96,8 +77,9 @@ class Network(object):
 		for peers in list(self.peerList):
 			if peers.hasSock == True: # To me: don't you dare change this to if peers.hasSock: actually this one should work but still...
 				peers.send(sendMessage)
-		self.manualClient()
-		
+
+
+
 	def connector(self):
 		new = self.printThis("Is this a new peer? y/n ", type = "input")
 		if new == "y":
@@ -123,8 +105,9 @@ class Network(object):
 			newPeer.send(self.port)
 		except socket.error:
 			self.printThis("Couldn't connect to peer " + str((newPeer.IP, newPeer.port)))
-	#	self.manualClient(self.ip, self.port)
-	
+
+
+
 	def manualAcceptor(self):
 		i = 0
 		while i < len(self.unconfirmedList):
@@ -134,7 +117,7 @@ class Network(object):
 				self.peerList.append(peer)
 				self.unconfirmedList.remove(peer)
 
-	#	self.manualClient()
+
 				
 	def acceptor(self):
 		serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -181,7 +164,7 @@ class Network(object):
 							if peers.name != None:
 								self.printThis("from " +  peers.name + ": " + str(message))
 							else:
-								self.printThis("from " +  str((peers.ip,peers.port)) + ": " + str(message))
+								self.printThis("from " +  str((peers.IP,peers.port)) + ": " + str(message))
 					
 			time.sleep(2)
 

@@ -86,10 +86,23 @@ if adamNode == "" or adamNode[0].lower()!= "y":
 # Initialize and start the threads
 WorkerThread("acceptor", myNetwork).start()
 WorkerThread("receiver", myNetwork).start()
-#WorkerThread("manualClient", myNetwork).start()
 
-# Running the transmitter on the main thread
-myNetwork.manualClient()
+
+# Main program loop
+command = None
+while command != "/exit":
+	command = raw_input("Please type your message, or enter a command, '/connect', '/accept', '/name', '/exit' then hit enter:  \n")
+
+	if command == "/connect":
+		myNetwork.connector()
+	elif command == "/accept":
+		myNetwork.manualAcceptor()
+	elif command == "/name":
+		myNetwork.name()
+#	elif command == "/init":
+#		myNetwork.manualInit()
+	else:
+		myNetwork.sender(command)
 
 
 # Close down the network
