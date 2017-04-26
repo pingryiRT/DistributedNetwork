@@ -184,3 +184,14 @@ class Network(object):
 								self.printThis("from " +  str((peers.ip,peers.port)) + ": " + str(message))
 					
 			time.sleep(2)
+
+
+	def shutdown(self):
+		""" Gracefully closes down all sockets. """
+		for peer in self.peerList:
+			if peer.hasSock:
+				peer.hasSock = False # Doing this before to try to prevent an error
+				# peers.send() need to send something to initiate shutdown
+				peer.Sock.shutdown(socket.SHUT_RDWR)
+				peer.Sock.close()
+

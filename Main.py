@@ -91,12 +91,7 @@ WorkerThread("receiver", myNetwork).start()
 # Running the transmitter on the main thread
 myNetwork.manualClient()
 
-# This should hopefully close a little nicer...
-for peers in myNetwork.peerList:
-	if peers.hasSock:
-		peers.hasSock = False # Doing this before to try to prevent an error
-		# peers.send() need to send something to initiate shutdown
-		peers.Sock.shutdown(socket.SHUT_RDWR)
-		peers.Sock.close()
 
+# Close down the network
+myNetwork.shutdown()
 		
