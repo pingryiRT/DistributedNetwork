@@ -27,15 +27,15 @@ def getOwnIP():
 	
 	# Send a packet to google who will reply to our IP
 	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-	s.connect(('google.com', 53))    
+	s.connect(('google.com', 53))
 	IP = s.getsockname()[0]
 	
-  # Make sure the detected IP looks valid, and if not fallback
+	# Make sure the detected IP looks valid, and if not fallback
 	while not validateIP(IP):
 		IP = raw_input("Please enter a valid IP address: ")
 	
 	return IP
-    
+
 
 
 def validateIP(IP):
@@ -59,6 +59,17 @@ def validateIP(IP):
 				
 	
 
+def connector():
+	""" Prompts user for data to connect to another peer, and establishes the connection.
+	 
+	    Warning. Uses global variable myNetwork."""
+	
+	peerIP = raw_input("Enter it your peer's IP address: ")
+	peerPort = getPort()
+
+	myNetwork.connect(peerIP, peerPort)
+
+
 ################################## MAIN PROGRAM BELOW ##################################
 
 myIP = getOwnIP()
@@ -72,13 +83,7 @@ adamNode = raw_input("Starting a new network? (y/N): ")
 
 # Add the first peer if the user wants one
 if adamNode == "" or adamNode[0].lower()!= "y":
-	print("\nI'll need your first peer's IP")
-	peerOneIP = raw_input("Enter it here: ")
-
-	print("\nI'll need the same peer's port")
-	peerOnePort = getPort()
-
-	myNetwork.connect(peerOneIP, peerOnePort)
+	connector()
 	
 
 # Initialize and start the threads
@@ -92,7 +97,7 @@ while command != "/exit":
 	command = raw_input("Please type your message, or enter a command, '/connect', '/accept', '/name', '/exit' then hit enter:  \n")
 
 	if command == "/connect":
-		myNetwork.connector()
+		connector()
 	elif command == "/accept":
 		myNetwork.manualAcceptor()
 	elif command == "/name":

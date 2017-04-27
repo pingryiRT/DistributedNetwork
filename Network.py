@@ -83,33 +83,12 @@ class Network(object):
 
 
 
-#	def connector(self):
-#		new = self.printThis("Is this a new peer? y/n ", type = "input")
-#		if new == "y":
-#			peerIP = self.printThis("Please enter the new peer's IP: ", type = "input")
-#			peerPort = int(self.printThis("Please enter the new peer's port: ", type = "input"))
-#			newPeer = Peer(peerIP, intPort = peerPort)
-#			self.peerList.append(newPeer)
-#		elif new == "n":
-#			strPeerList = []
-#			for peers in self.peerList:
-#				strPeerList.append(str(peers))
-#			peerIndex = int(self.printThis("Please identify the peer's index: ", type = "input"))
-#			if self.peerList[peerIndex].port == None:
-#				peerPort = int(printThis("Please enter the peer's port: ", type = "input"))
-#			newPeer = self.peerList[peerIndex]
-#		
-#		self.connect(newPeer)
-
-
-
 	def connect(self, ip, port):
 		""" Initializes a connection to the new peer passed in. """
 		
 		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		try:
 			sock.connect((ip, port))
-			
 			
 		except socket.error:
 			self.printThis("Couldn't connect to peer " + str((ip, port)))
