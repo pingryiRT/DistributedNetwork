@@ -64,14 +64,20 @@ class Network(object):
 		name = self.printThis("Please enter the name of the peer you would like to name: \n", type = "input")
 		self.peerList[int(index)].name=name
 		
+	def addPort(self):
+		for peers in list(self.peerList):
+			print(str(peers) + " " + str(self.peerList.index(peers)))
+		index = int(self.printThis("Please enter the index of the peer you would like to add a port to: \n", type = "input"))
+		port = int(self.printThis("Please enter the port for the peer: \n", type = "input"))
+		self.peerList[index].port = port
 		
-			
 	def manualInit(self):
 		for peers in self.peerList:
 			if peers.isBlocking == True:
 				peers.Sock.setblocking(0)
 				self.printThis(str(peers) + " set to non blocking")
 				peers.isBlocking = False
+				
 	def sender(self, sendMessage):
 	
 		for peers in list(self.peerList):

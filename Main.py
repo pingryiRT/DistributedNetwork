@@ -91,7 +91,7 @@ WorkerThread("receiver", myNetwork).start()
 # Main program loop
 command = None
 while command != "/exit":
-	command = raw_input("Please type your message, or enter a command, '/connect', '/accept', '/name', '/exit' then hit enter:  \n")
+	command = raw_input("Please type your message, or enter a command, '/connect', '/accept', '/name', '/addPort', '/exit' then hit enter:  \n")
 
 	if command == "/connect":
 		myNetwork.connector()
@@ -99,6 +99,8 @@ while command != "/exit":
 		myNetwork.manualAcceptor()
 	elif command == "/name":
 		myNetwork.name()
+	elif command == "/addPort":
+		myNetwork.addPort()
 #	elif command == "/init":
 #		myNetwork.manualInit()
 	else:
