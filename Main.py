@@ -80,7 +80,8 @@ if adamNode == "" or adamNode[0].lower()!= "y":
 	peerOnePort = getPort()
 
 	peerOne = Peer(peerOneIP,peerOnePort)
-	myNetwork.peerList.append(peerOne)
+	myNetwork.connect(peerOne)
+#  myNetwork.connector()
 	
 
 # Initialize and start the threads

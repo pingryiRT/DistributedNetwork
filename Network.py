@@ -96,7 +96,13 @@ class Network(object):
 				peerPort = int(printThis("Please enter the peer's port: ", type = "input"))
 			newPeer = self.peerList[peerIndex]
 		
-				
+		self.connect(newPeer)
+
+
+
+	def connect(self, newPeer):
+		""" Initializes a connection to the new peer passed in. """		
+		
 		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		try:
 			sock.connect((newPeer.IP, newPeer.port))
