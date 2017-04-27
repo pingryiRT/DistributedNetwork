@@ -106,11 +106,16 @@ class Network(object):
 		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		try:
 			sock.connect((newPeer.IP, newPeer.port))
-			newPeer.addSock(sock)
-			self.printThis("connected to " + newPeer.IP)
-			newPeer.send(self.port)
+			
+			
 		except socket.error:
 			self.printThis("Couldn't connect to peer " + str((newPeer.IP, newPeer.port)))
+		
+		finally:
+		  self.peerList.append(newPeer)
+		  newPeer.addSock(sock)
+		  newPeer.send(self.port)
+		  self.printThis("connected to " + newPeer.IP)
 
 
 
