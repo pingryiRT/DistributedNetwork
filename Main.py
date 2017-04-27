@@ -2,7 +2,6 @@ import socket
 
 from WorkerThread import WorkerThread
 from Network import Network
-from Peer import Peer
 
 def getPort():
 	"""
@@ -79,9 +78,7 @@ if adamNode == "" or adamNode[0].lower()!= "y":
 	print("\nI'll need the same peer's port")
 	peerOnePort = getPort()
 
-	peerOne = Peer(peerOneIP,peerOnePort)
-	myNetwork.connect(peerOne)
-#  myNetwork.connector()
+	myNetwork.connect(peerOneIP, peerOnePort)
 	
 
 # Initialize and start the threads
