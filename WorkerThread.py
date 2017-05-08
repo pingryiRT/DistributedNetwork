@@ -28,30 +28,19 @@ class WorkerThread(Thread):
 
   def run(self):
     """ Determine which function this thread should run, and make it happen it. """
-    
+    print("run")
     if self.kind  == "manualClient":
     	if self.debug:
     		print("DEBUG: ManualClient thread is running.")
-      	self.network.manualClient()
-      
-    elif self.kind == "receiver":
-    	if self.debug:
-    		print("DEBUG: Receiver thread is running.")
-    		
-    	while (not self.Stopper):
-    		self.network.receiver()
-      		time.sleep(2)
-      		
-      		
-      		
-    elif self.kind == "acceptor":
-    	if self.debug:
-        	print("DEBUG: Acceptor thread is running.")	
-        	
-      	serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-      	serverSocket.bind((self.network.ip, self.network.port))
-      	serverSocket.listen(0)
-      	
-      	while (not self.Stopper):
-      		self.network.acceptor(serverSocket)
-      		time.sleep(1)
+    	self.network.manualClient()
+    while (not self.Stopper): 
+		if self.kind == "receiver":
+			if self.debug:
+				print("DEBUG: Receiver thread is running.")
+			self.network.receiver()
+		elif self.kind == "acceptor":
+			print("a")
+			if self.debug:
+				print("DEBUG: Acceptor thread is running.")	
+			self.network.acceptor()
+		time.sleep(1)

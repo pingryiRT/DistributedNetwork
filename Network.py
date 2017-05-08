@@ -29,8 +29,11 @@ class Network(object):
 		self.printStopper = False
 		self.ip = ip
 		self.port = port
-	
-	
+		serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		serverSocket.bind((self.ip, self.port))
+		serverSocket.listen(0)
+		self.server = serverSocket
+      	
 	
 	def printThis(self, message, type = None):
 		if type == None:
@@ -93,8 +96,10 @@ class Network(object):
 				self.unconfirmedList.remove(peer)
 
 	
-	def acceptor(self, serverSocket):
-			clientSocket, clientAddress = serverSocket.accept() 
+	def acceptor(self):
+			print("1")
+			clientSocket, clientAddress = self.server.accept() 
+			print("3")
 			thisPeer = Peer(clientAddress[0],Socket = clientSocket)
 			if thisPeer not in self.unconfirmedList:
 				self.unconfirmedList.append(thisPeer)
