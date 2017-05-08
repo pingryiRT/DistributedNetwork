@@ -1,7 +1,7 @@
 import socket
 import pickle
 import select
-import time
+
 
 from Peer import Peer
 
@@ -26,7 +26,6 @@ class Network(object):
 		
 		self.unconfirmedList = []
 		self.peerList = []
-		self.Stopper = False
 		self.printStopper = False
 		self.ip = ip
 		self.port = port
@@ -58,13 +57,11 @@ class Network(object):
 		self.peerList[index].port = port
 	
 	
-	
 	def sender(self, sendMessage):
 		for peers in list(self.peerList):
 			if peers.hasSock == True: # To me: don't you dare change this to if peers.hasSock: actually this one should work but still...
 				peers.send(sendMessage)
-	
-	
+
 	
 	def connect(self, ip, port):
 		""" Initializes a connection to the new peer passed in. """
@@ -94,19 +91,14 @@ class Network(object):
 			if input == "y":
 				self.peerList.append(peer)
 				self.unconfirmedList.remove(peer)
+
 	
-	
-	
-	def acceptor(self):
-		serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		serverSocket.bind((self.ip, self.port))
-		serverSocket.listen(0)
-		while not self.Stopper:
+	def acceptor(self, serverSocket):
 			clientSocket, clientAddress = serverSocket.accept() 
 			thisPeer = Peer(clientAddress[0],Socket = clientSocket)
 			if thisPeer not in self.unconfirmedList:
 				self.unconfirmedList.append(thisPeer)
-			time.sleep(1)
+			
 			#print("Accepted connection from {}".format(clientAddress))
 	
 	
@@ -115,31 +107,29 @@ class Network(object):
 		""" Goes through all of the peers, and attempts to receive messages from all of the ones
 		with a socket; however, currently I believe part of this may be related to my current error
 		"""
-		
-		while not self.Stopper:
-			sockList=[]
-			for peers in self.peerList:
-				if peers.hasSock == True:
-					sockList.append(peers.Sock)
-			receiveOpen,writeOpen,errorSocks = select.select(sockList,[],[],2)#kind of bad, 
+		sockList=[]
+		for peers in self.peerList:
+			if peers.hasSock == True:
+				sockList.append(peers.Sock)
+		receiveOpen,writeOpen,errorSocks = select.select(sockList,[],[],2)#kind of bad, 
 			# but I don't currently need to check for writable/errors... if I need to I will later
 			# timeout is in 2 seconds
-			for sockets in receiveOpen:
-				message = pickle.loads(sockets.recv(1024))
-				if type(message) is list:
-					messageStr = []
-					for peers in message:
-						messageStr.append(str(peers))
-					self.printThis("received peerlist: " + str(messageStr) + " from " + str((peers.ip, peers.port)))
-				else:
-					for peers in list(self.peerList):
-						if peers.Sock == sockets:
-							if peers.name != None:
-								self.printThis("from " + peers.name + ": " + str(message))
-							else:
-								self.printThis("from " + str((peers.IP,peers.port)) + ": " + str(message))
-					
-			time.sleep(2)
+		for sockets in receiveOpen:
+			message = pickle.loads(sockets.recv(1024))
+			if type(message) is list:
+				messageStr = []
+				for peers in message:
+					messageStr.append(str(peers))
+				self.printThis("received peerlist: " + str(messageStr) + " from " + str((peers.ip, peers.port)))
+			else:
+				for peers in list(self.peerList):
+					if peers.Sock == sockets:
+						if peers.name != None:
+							self.printThis("from " + peers.name + ": " + str(message))
+						else:
+							self.printThis("from " + str((peers.IP,peers.port)) + ": " + str(message))
+				
+		
 	
 	
 	

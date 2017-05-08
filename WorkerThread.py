@@ -1,12 +1,13 @@
 from threading import Thread
-
+import time
+import socket
 
 class WorkerThread(Thread):
   """ 
   Class used for overriding the default thread constructor, and running each thread.
   """
   
-  def __init__(self, kind, network, debug = False):
+  def __init__(self, kind, network, debug = False, Stopper = False):
     """ Initialize the class attributes as outlined here:
     
     * kind -- str -- Which kind of the thread to be used in determining which function it should initiate.
@@ -20,6 +21,7 @@ class WorkerThread(Thread):
     self.kind = kind
     self.network = network
     self.debug = debug
+    self.Stopper = Stopper
     
     # Make this thread a daemon so the terminal doesn't hang on keyboard interrupt.
     self.setDaemon(True)
@@ -28,17 +30,28 @@ class WorkerThread(Thread):
     """ Determine which function this thread should run, and make it happen it. """
     
     if self.kind  == "manualClient":
-      if self.debug:
-        print("DEBUG: ManualClient thread is running.")
-      self.network.manualClient()
+    	if self.debug:
+    		print("DEBUG: ManualClient thread is running.")
+      	self.network.manualClient()
       
     elif self.kind == "receiver":
-      if self.debug:
-        print("DEBUG: Receiver thread is running.")
-      self.network.receiver()
-      
+    	if self.debug:
+    		print("DEBUG: Receiver thread is running.")
+    		
+    	while (not self.Stopper):
+    		self.network.receiver()
+      		time.sleep(2)
+      		
+      		
+      		
     elif self.kind == "acceptor":
-      if self.debug:
-        print("DEBUG: Acceptor thread is running.")
-      self.network.acceptor()
-
+    	if self.debug:
+        	print("DEBUG: Acceptor thread is running.")	
+        	
+      	serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+      	serverSocket.bind((self.network.ip, self.network.port))
+      	serverSocket.listen(0)
+      	
+      	while (not self.Stopper):
+      		self.network.acceptor(serverSocket)
+      		time.sleep(1)
