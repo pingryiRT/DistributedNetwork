@@ -13,8 +13,7 @@ class Network(object):
 	and keep them separate in the future, or simultaneously connect as multiple identities.
 	"""
 	
-	#TODO This feels fairly sloppy, but oh well... If someone wants to make a branch to make it
-	# less sloppy feel free to
+
 	def __init__(self, ip, port):
 		"""
 		peerList -- a list of all the current Peer objects
@@ -29,10 +28,11 @@ class Network(object):
 		self.printStopper = False
 		self.ip = ip
 		self.port = port
-		serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		serverSocket.bind((self.ip, self.port))
-		serverSocket.listen(0)
-		self.server = serverSocket
+		
+		# Create the server socket and make it listen
+		self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		self.server.bind((self.ip, self.port))
+		self.server.listen(0)
       	
 	
 	def printThis(self, message, type = None):
