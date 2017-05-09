@@ -51,14 +51,6 @@ class Network(object):
 		self.peerList[int(index)].name=name
 	
 	
-			
-	def addPort(self):
-		for peers in list(self.peerList):
-			print(str(peers) + " " + str(self.peerList.index(peers)))
-		index = int(self.printThis("Please enter the index of the peer you would like to add a port to: \n", type = "input"))
-		port = int(self.printThis("Please enter the port for the peer: \n", type = "input"))
-		self.peerList[index].port = port
-	
 	
 	def sender(self, sendMessage):
 		for peers in list(self.peerList):
