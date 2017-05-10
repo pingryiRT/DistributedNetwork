@@ -48,14 +48,10 @@ class Peer(object):
 	  
 	  return self.IP == other.IP and self.port == other.port
 	
-	
 	def __neq__(self, other):
 	  """ Compares the peer to another peer for inequality. (for != operator) """
 	  
 	  return not self == other
-	
-	
-	
 	
 	def sendable(self):
 		""" Returns an instance of peer that is this peer, but a sendable version ie no socket"""
@@ -82,12 +78,10 @@ class Peer(object):
 				print(message)
 			except socket.error:
 				print("error receiving message from " + str((self.IP,self.port)))
-				#self.hasSock = None
-				print("peer not removed")
 
 	def addSock(self,Socket):
 		""" Add a socket to the peer. """
 		self.Sock = Socket 
 		self.hasSock = True
-		# Aware this looks suspiciously like a setter, I just didn't feel like not doing it...	
+		
 	
