@@ -152,10 +152,18 @@ class Network(object):
 				for peers in message:
 					messageStr.append(str(peers))
 				self.printThis("received peerlist: " + str(messageStr) + " from " + str((peers.ip, peers.port)))
+			
 			else:
 				for peers in list(self.peerList):
 					if peers.Sock == sockets:
-						if peers.name != None:
+						if str(message) == "/exit":
+							peers.Sock = None
+							peers.hasSock = None
+							if peers.name != None:
+								self.printThis(peers.name + " exited.")
+							else:
+								self.printThis(str((peers.IP,peers.port)) + " exited.")
+						elif peers.name != None:
 							self.printThis("from " + peers.name + ": " + str(message))
 						else:
 							self.printThis("from " + str((peers.IP,peers.port)) + ": " + str(message))
