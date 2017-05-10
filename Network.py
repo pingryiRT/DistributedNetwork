@@ -13,14 +13,18 @@ class Network(object):
 	and keep them separate in the future, or simultaneously connect as multiple identities.
 	"""
 	
-
 	def __init__(self, ip, port):
 		"""
-		peerList -- a list of all the current Peer objects
+		peerList -- a list of all the current Peer objects, which are used to send and receive 
+		messages
 		Stopper -- used to stop everything
 		printStopper -- used as a poor-man's lock object to control printing output 
 		ip -- This hosts own IP address as seen by peers on the network
 		port -- The port on which this host is running a server
+		server -- the server socket object of the network (for other nodes to connect to)
+		A name object can be added to peers as a means of providing a unique id
+		unconfirmedList -- contains peers that have not been manually accepted by the user
+		and are not yet used to send and receive messages
 		"""
 		
 		self.unconfirmedList = []
@@ -28,14 +32,17 @@ class Network(object):
 		self.printStopper = False
 		self.ip = ip
 		self.port = port
-		
-		# Create the server socket and make it listen
-		self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		self.server.bind((self.ip, self.port))
-		self.server.listen(0)
+		serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		serverSocket.bind((self.ip, self.port))
+		serverSocket.listen(0)
+		self.server = serverSocket
       	
 	
 	def printThis(self, message, type = None):
+		"""
+		Very simple method -- if type is none it prints message, otherwise it returns 
+		raw user input with message being used as a prompt
+		"""
 		if type == None:
 			print(message)
 		else:
@@ -44,6 +51,10 @@ class Network(object):
 	
 	
 	def name(self):
+		"""
+		Gives a peer a unique name identifier (determined by the input of the user)
+		The name will be accessible through peer.name
+		"""
 		for peers in list(self.peerList):
 			print(str(peers) + " " + str(self.peerList.index(peers)))
 		index = self.printThis("Please enter the index of the peer you would like to name: \n", type = "input")
@@ -51,8 +62,23 @@ class Network(object):
 		self.peerList[int(index)].name=name
 	
 	
+			
+	def addPort(self):
+		"""
+		Adds a server port to a peer, the peer which has the port added, and the port number
+		to be added is determined with user input
+		"""
+		for peers in list(self.peerList):
+			print(str(peers) + " " + str(self.peerList.index(peers)))
+		index = int(self.printThis("Please enter the index of the peer you would like to add a port to: \n", type = "input"))
+		port = int(self.printThis("Please enter the port for the peer: \n", type = "input"))
+		self.peerList[index].port = port
+	
 	
 	def sender(self, sendMessage):
+		"""
+		Sends message to all peers with a socket
+		"""
 		for peers in list(self.peerList):
 			if peers.hasSock == True: # To me: don't you dare change this to if peers.hasSock: actually this one should work but still...
 				peers.send(sendMessage)
@@ -79,6 +105,10 @@ class Network(object):
 	
 	
 	def manualAcceptor(self):
+		"""
+		Moves a peer that has attempted to connect to this network instance from the 
+		unconfirmedList to peerList, where messages can be sent and received
+		"""
 		i = 0
 		while i < len(self.unconfirmedList):
 			peer = self.unconfirmedList[i]
@@ -89,20 +119,23 @@ class Network(object):
 
 	
 	def acceptor(self):
-			print("1")
-			clientSocket, clientAddress = self.server.accept() 
-			print("3")
-			thisPeer = Peer(clientAddress[0],Socket = clientSocket)
-			if thisPeer not in self.unconfirmedList:
-				self.unconfirmedList.append(thisPeer)
-			
-			#print("Accepted connection from {}".format(clientAddress))
+		"""
+		Automatically accepts incoming peer conncections, but leaves them in the unconfirmedList
+		where messages they attempt to send are not deserialized, and any messages sent by the 
+		user will not be forwarded to them
+		"""
+		clientSocket, clientAddress = self.server.accept() 
+		thisPeer = Peer(clientAddress[0],Socket = clientSocket)
+		if thisPeer not in self.unconfirmedList:
+			self.unconfirmedList.append(thisPeer)
+		
+		#print("Accepted connection from {}".format(clientAddress))
 	
 	
 	
 	def receiver(self):
 		""" Goes through all of the peers, and attempts to receive messages from all of the ones
-		with a socket; however, currently I believe part of this may be related to my current error
+		with a socket
 		"""
 		sockList=[]
 		for peers in self.peerList:
@@ -131,7 +164,7 @@ class Network(object):
 	
 	
 	def shutdown(self):
-		""" Gracefully closes down all sockets. """
+		""" Gracefully closes down all sockets for this peer"""
 		
 		for peer in self.peerList:
 			if peer.hasSock:

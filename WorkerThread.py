@@ -39,7 +39,6 @@ class WorkerThread(Thread):
 				print("DEBUG: Receiver thread is running.")
 			self.network.receiver()
 		elif self.kind == "acceptor":
-			print("a")
 			if self.debug:
 				print("DEBUG: Acceptor thread is running.")	
 			self.network.acceptor()
