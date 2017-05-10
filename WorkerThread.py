@@ -15,6 +15,7 @@ class WorkerThread(Thread):
       This could be  useful is if in the future we would like to make a single program connect to several networks
       at the same time (ie using one to connect to a network working on solving and another on blockchain.)    
     * debug -- bool -- Whether or not to print debugging information.
+    * Stopper if set to true, any looping threads will stop
     """
     
     Thread.__init__(self)
@@ -27,8 +28,7 @@ class WorkerThread(Thread):
     self.setDaemon(True)
 
   def run(self):
-    """ Determine which function this thread should run, and make it happen it. """
-    print("run")
+    """ Determine which function this thread should run, and makes it happen it. """
     if self.kind  == "manualClient":
     	if self.debug:
     		print("DEBUG: ManualClient thread is running.")
