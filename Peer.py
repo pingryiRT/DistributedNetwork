@@ -11,12 +11,12 @@ class Peer(object):
 	port--intPort
 	hasSock--boolean if the peer currently has a socket object, but may also be reverted to None
 	to shut down a malfunctioning peer
+	name -- initialized as None, but can be added to give a peer object a unique identifier
 	"""
 	
 	def __init__(self, stringIP, intPort = None, Socket = None, isBlocking = None):
 		self.IP = stringIP
 		self.port = intPort
-		self.isBlocking = True
 			
 		# If a socket is provided, use it. Otherwise, document that.
 		#TODO Do we really need the bool hasSocket? Can't we just test for `self.socket is None`? 
