@@ -85,7 +85,8 @@ class Network(object):
 
 	
 	def connect(self, ip, port):
-		""" Initializes a connection to the new peer passed in. """
+		""" Initializes a connection with a socket to a given ip and port, and then creates a 
+		new peer object, appends it to the peerList, and adds that socket to the new peer """
 		
 		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		try:
