@@ -14,14 +14,14 @@ class Peer(object):
 	name -- initialized as None, but can be added to give a peer object a unique identifier
 	"""
 	
-	def __init__(self, stringIP, intPort = None, Socket = None):
+	def __init__(self, stringIP, intPort = None, socket = None):
 		self.IP = stringIP
 		self.port = intPort
 			
 		# If a socket is provided, use it. Otherwise, document that.
 		#TODO Do we really need the bool hasSocket? Can't we just test for `self.socket is None`? 
-		if Socket is not None:
-			self.Sock = Socket
+		if socket is not None:
+			self.Sock = socket
 			self.hasSock = True 
 			
 		else:

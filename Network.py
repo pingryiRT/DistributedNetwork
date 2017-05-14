@@ -19,19 +19,16 @@ class Network(object):
 		"""
 		peerList -- a list of all the current Peer objects, which are used to send and receive 
 		messages
-		Stopper -- used to stop everything
-		printStopper -- used as a poor-man's lock object to control printing output 
+		unconfirmedList -- contains peers that have not been manually accepted by the user
+		and are not yet used to send and receive messages
 		ip -- This hosts own IP address as seen by peers on the network
 		port -- The port on which this host is running a server
 		server -- the server socket object of the network (for other nodes to connect to)
 		A name object can be added to peers as a means of providing a unique id
-		unconfirmedList -- contains peers that have not been manually accepted by the user
-		and are not yet used to send and receive messages
 		"""
 		
 		self.unconfirmedList = []
 		self.peerList = []
-		self.printStopper = False
 		self.ip = ip
 		self.port = port
 		
@@ -39,40 +36,17 @@ class Network(object):
 		self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.server.bind((self.ip, self.port))
 		self.server.listen(0)
-      	
-	
-	def printThis(self, message, type = None):
-		"""
-		Very simple method -- if type is none it prints message, otherwise it returns 
-		raw user input with message being used as a prompt
-		"""
-		if type == None:
-			print(message)
-		else:
-			return raw_input(message)
 	
 	
 	
-	def name(self):
-		"""
-		Gives a peer a unique name identifier (determined by the input of the user)
-		The name will be accessible through peer.name
-		"""
-		for peers in list(self.peerList):
-			print(str(peers) + " " + str(self.peerList.index(peers)))
-		index = self.printThis("Please enter the index of the peer you would like to name: \n", type = "input")
-		name = self.printThis("Please enter the name of the peer you would like to name: \n", type = "input")
-		self.peerList[int(index)].name=name
-	
-	
-	
-	def sender(self, sendMessage):
+	def send(self, message):
 		"""
 		Sends message to all peers with a socket
 		"""
+		
 		for peers in list(self.peerList):
 			if peers.hasSock == True: # To me: don't you dare change this to if peers.hasSock: actually this one should work but still...
-				peers.send(sendMessage)
+				peers.send(message)
 
 	
 	def connect(self, ip, port):
@@ -84,30 +58,24 @@ class Network(object):
 			sock.connect((ip, port))
 			
 		except socket.error:
-			self.printThis("Couldn't connect to peer " + str((ip, port)))
+			raise Exception("Couldn't connect to peer " + str((ip, port)))
 		
 		finally:
-			newPeer = Peer(ip, port)
+			newPeer = Peer(ip, port, socket = sock)
 			self.peerList.append(newPeer)
-			newPeer.addSock(sock)
-			self.printThis("connected to " + ip)
 			
 			newPeer.send(self.port)
 	
 	
 	
-	def manualAcceptor(self):
+	def approve(self, peer):
 		"""
 		Moves a peer that has attempted to connect to this network instance from the 
 		unconfirmedList to peerList, where messages can be sent and received
 		"""
-		i = 0
-		while i < len(self.unconfirmedList):
-			peer = self.unconfirmedList[i]
-			input = self.printThis("y/n to add: " + str(peer) + " ", type = "input")
-			if input == "y":
-				self.peerList.append(peer)
-				self.unconfirmedList.remove(peer)
+		
+		self.unconfirmedList.remove(peer)
+		self.peerList.append(peer)
 
 	
 	def acceptor(self):
@@ -117,7 +85,7 @@ class Network(object):
 		user will not be forwarded to them
 		"""
 		clientSocket, clientAddress = self.server.accept() 
-		thisPeer = Peer(clientAddress[0],Socket = clientSocket)
+		thisPeer = Peer(clientAddress[0], socket = clientSocket)
 		if thisPeer not in self.unconfirmedList:
 			self.unconfirmedList.append(thisPeer)
 		
@@ -142,7 +110,7 @@ class Network(object):
 				messageStr = []
 				for peers in message:
 					messageStr.append(str(peers))
-				self.printThis("received peerlist: " + str(messageStr) + " from " + str((peers.ip, peers.port)))
+				print("received peerlist: " + str(messageStr) + " from " + str((peers.ip, peers.port)))
 			
 			else:
 				for peers in list(self.peerList):
@@ -151,13 +119,13 @@ class Network(object):
 							peers.Sock = None
 							peers.hasSock = None
 							if peers.name != None:
-								self.printThis(peers.name + " exited.")
+								print(peers.name + " exited.")
 							else:
-								self.printThis(str((peers.IP,peers.port)) + " exited.")
+								print(str((peers.IP,peers.port)) + " exited.")
 						elif peers.name != None:
-							self.printThis("from " + peers.name + ": " + str(message))
+							print("from " + peers.name + ": " + str(message))
 						else:
-							self.printThis("from " + str((peers.IP,peers.port)) + ": " + str(message))
+							print("from " + str((peers.IP,peers.port)) + ": " + str(message))
 				
 		
 	

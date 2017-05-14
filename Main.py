@@ -57,7 +57,7 @@ def validateIP(IP):
 	
 	return True
 				
-	
+######## Functions that could be moved to a separate interface module #####
 
 def connector():
 	""" Prompts user for data to connect to another peer, and establishes the connection.
@@ -68,6 +68,38 @@ def connector():
 	peerPort = getPort()
 
 	myNetwork.connect(peerIP, peerPort)
+
+
+
+def name():
+	"""
+	Gives a peer a human-redable name identifier.
+	The name will be accessible through peer.name
+	
+	Warning. Uses global variable myNetwork."""
+	
+	for peer in list(myNetwork.peerList):
+		print(str(peer) + " " + str(self.peerList.index(peers)))
+	index = int(raw_input("Please enter the index of the peer you would like to name: "))
+	name = raw_input("Please enter the new name: ")
+	self.peerList[int(index)].name = name
+
+
+def approver():
+	"""
+	Moves a peer that has connected to this network instance from the
+	unconfirmedList to peerList, where messages can be sent and received.
+	
+	Warning. Uses global variable myNetwork."""
+	
+	i = 0
+	while i < len(myNetwork.unconfirmedList):
+		peer = myNetwork.unconfirmedList[i]
+		add = raw_input("y/n to add: " + str(peer) + " ").lower()
+		if add == "y":
+			myNetwork.approve(peer)
+		
+		i += 1
 
 
 ################################## MAIN PROGRAM BELOW ##################################
@@ -94,20 +126,20 @@ WorkerThread("receiver", myNetwork).start()
 # Main program loop
 command = None
 while command != "/exit":
-	command = raw_input("Please type your message, or enter a command, '/connect', '/accept', '/name', '/addPort', '/exit' then hit enter:  \n")
+	command = raw_input("Please type your message, or enter a command, '/connect', '/approve', '/name', '/addPort', '/exit' then hit enter: \n")
 
 	if command == "/connect":
 		connector()
-	elif command == "/accept":
-		myNetwork.manualAcceptor()
+	elif command == "/approve":
+		approver()
 	elif command == "/name":
-		myNetwork.name()
+		name()
 	elif command == "/addPort":
 		myNetwork.addPort()
 #	elif command == "/init":
 #		myNetwork.manualInit()
 	else:
-		myNetwork.sender(command)
+		myNetwork.send(command)
 
 
 # Close down the network
