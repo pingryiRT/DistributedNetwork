@@ -14,7 +14,7 @@ class Peer(object):
 	name -- initialized as None, but can be added to give a peer object a unique identifier
 	"""
 	
-	def __init__(self, stringIP, intPort = None, Socket = None, isBlocking = None):
+	def __init__(self, stringIP, intPort = None, Socket = None):
 		self.IP = stringIP
 		self.port = intPort
 			
@@ -64,10 +64,9 @@ class Peer(object):
 			try:
 				self.Sock.send(pickle.dumps(message))
 			except socket.error:
-				print("error sending message " + message + " to peer " + str((self.IP,self.port)))
 				self.hasSock = None
-				print("peer removed")
-		
+				raise Exception("error sending message " + message + " to peer " + str(self))
+	
 	def receive(self):
 		""" Receive a message from this peer and print it. """
 		if self.hasSock==True:
@@ -75,9 +74,9 @@ class Peer(object):
 				print("hasSockTrue")
 				
 				message = pickle.loads(self.Sock.recv(1024))
-				print(message)
+				return message
 			except socket.error:
-				print("error receiving message from " + str((self.IP,self.port)))
+				raise Exception("error receiving message from " + str(self))
 
 	def addSock(self,Socket):
 		""" Add a socket to the peer. """
