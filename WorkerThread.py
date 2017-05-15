@@ -7,7 +7,7 @@ class WorkerThread(Thread):
   Class used for overriding the default thread constructor, and running each thread.
   """
   
-  def __init__(self, kind, network, debug = False, Stopper = False):
+  def __init__(self, kind, instance, debug = False, Stopper = False):
     """ Initialize the class attributes as outlined here:
     
     * kind -- str -- Which kind of the thread to be used in determining which function it should initiate.
@@ -20,7 +20,7 @@ class WorkerThread(Thread):
     
     Thread.__init__(self)
     self.kind = kind
-    self.network = network
+    self.instance = instance
     self.debug = debug
     self.Stopper = Stopper
     
@@ -29,17 +29,21 @@ class WorkerThread(Thread):
 
   def run(self):
     """ Determine which function this thread should run, and makes it happen it. """
+    if self.kind == "interface":
+    	if self.debug:
+    		print("DEBUG: Interface thread is running.")
+    	self.instance.run()
     if self.kind  == "manualClient":
     	if self.debug:
     		print("DEBUG: ManualClient thread is running.")
-    	self.network.manualClient()
+    	self.instance.manualClient()
     while (not self.Stopper): 
 		if self.kind == "receiver":
 			if self.debug:
 				print("DEBUG: Receiver thread is running.")
-			self.network.receiver()
+			self.instance.receiver()
 		elif self.kind == "acceptor":
 			if self.debug:
 				print("DEBUG: Acceptor thread is running.")	
-			self.network.acceptor()
+			self.instance.acceptor()
 		time.sleep(1)
