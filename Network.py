@@ -64,7 +64,7 @@ class Network(object):
 			newPeer = Peer(ip, port, socket = sock)
 			self.peerList.append(newPeer)
 			
-			newPeer.send(self.port)
+			newPeer.send(str(self.port))
 	
 	
 	

@@ -79,10 +79,10 @@ def name():
 	Warning. Uses global variable myNetwork."""
 	
 	for peer in list(myNetwork.peerList):
-		print(str(peer) + " " + str(self.peerList.index(peers)))
+		print(str(peer) + " " + str(myNetwork.peerList.index(peer)))
 	index = int(raw_input("Please enter the index of the peer you would like to name: "))
 	name = raw_input("Please enter the new name: ")
-	self.peerList[int(index)].name = name
+	myNetwork.peerList[int(index)].name = name
 
 
 def approver():
