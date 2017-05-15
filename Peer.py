@@ -14,7 +14,7 @@ class Peer(object):
 	name -- initialized as None, but can be added to give a peer object a unique identifier
 	"""
 	
-	def __init__(self, stringIP, intPort = None, socket = None):
+	def __init__(self, stringIP, intPort = None, socket = None, name = "Peer"):
 		self.IP = stringIP
 		self.port = intPort
 			
@@ -26,17 +26,18 @@ class Peer(object):
 			
 		else:
 			self.hasSock = False
-		self.name = None
+		self.name = name
 	
 	def __str__(self):
 		"""
-		Returns a string representation of this peer including IPv4 address, port and whether a socket exists.
+		Returns a string representation of this peer including IPv4 address, port,
+		human readable name, and whether a socket exists.
 		
-		Example with a socket:  Peer@192.168.1.4 12345(S)
-		Example without socket: Peer@192.168.1.4 12345
+		Example with a socket:  Bob@192.168.1.4 12345(S)
+		Example without socket: Bob@192.168.1.4 12345
 		"""
 		
-		text = "Peer@" + self.IP + " " + str(self.port)
+		text = self.name + "@" + self.IP + " " + str(self.port)
 		if self.hasSock:
 			text += "(S)"
 		return text

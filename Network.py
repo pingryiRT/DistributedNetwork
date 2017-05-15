@@ -118,14 +118,9 @@ class Network(object):
 						if str(message) == "/exit":
 							peers.Sock = None
 							peers.hasSock = None
-							if peers.name != None:
-								print(peers.name + " exited.")
-							else:
-								print(str((peers.IP,peers.port)) + " exited.")
-						elif peers.name != None:
-							print("from " + peers.name + ": " + str(message))
+							print(str(peers) + " exited.")
 						else:
-							print("from " + str((peers.IP,peers.port)) + ": " + str(message))
+							print("from " + str(peers) + ": " + str(message))
 				
 		
 	
