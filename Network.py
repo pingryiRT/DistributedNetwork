@@ -13,7 +13,7 @@ class Network(object):
 	and keep them separate in the future, or simultaneously connect as multiple identities.
 	"""
 	
-	def __init__(self, ip, port):
+	def __init__(self, ip, port,interface):
 		"""
 		peerList -- a list of all the current Peer objects, which are used to send and receive 
 		messages
@@ -32,46 +32,25 @@ class Network(object):
 		self.printStopper = False
 		self.ip = ip
 		self.port = port
+		self.interface = interface
 		serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		serverSocket.bind((self.ip, self.port))
 		serverSocket.listen(0)
 		self.server = serverSocket
       	
-	
-	def printThis(self, message, type = None):
-		"""
-		Very simple method -- if type is none it prints message, otherwise it returns 
-		raw user input with message being used as a prompt
-		"""
-		if type == None:
-			print(message)
-		else:
-			return raw_input(message)
-	
-	
-	
-	def name(self):
+
+	def name(self, name, index):
 		"""
 		Gives a peer a unique name identifier (determined by the input of the user)
 		The name will be accessible through peer.name
 		"""
-		for peers in list(self.peerList):
-			print(str(peers) + " " + str(self.peerList.index(peers)))
-		index = self.printThis("Please enter the index of the peer you would like to name: \n", type = "input")
-		name = self.printThis("Please enter the name of the peer you would like to name: \n", type = "input")
 		self.peerList[int(index)].name=name
-	
-	
-			
-	def addPort(self):
+		
+	def addPort(self, port, index):
 		"""
 		Adds a server port to a peer, the peer which has the port added, and the port number
 		to be added is determined with user input
 		"""
-		for peers in list(self.peerList):
-			print(str(peers) + " " + str(self.peerList.index(peers)))
-		index = int(self.printThis("Please enter the index of the peer you would like to add a port to: \n", type = "input"))
-		port = int(self.printThis("Please enter the port for the peer: \n", type = "input"))
 		self.peerList[index].port = port
 	
 	
@@ -93,31 +72,15 @@ class Network(object):
 			sock.connect((ip, port))
 			
 		except socket.error:
-			self.printThis("Couldn't connect to peer " + str((ip, port)))
+			self.interface.netMessage("Alert: could not connect to peer: ({0}, {1!s}".format(ip,port))
 		
 		finally:
 			newPeer = Peer(ip, port)
 			self.peerList.append(newPeer)
 			newPeer.addSock(sock)
-			self.printThis("connected to " + ip)
-			
+			self.interface.netMessage(str(newPeer) + " connected.")
 			newPeer.send(self.port)
 	
-	
-	
-	def manualAcceptor(self):
-		"""
-		Moves a peer that has attempted to connect to this network instance from the 
-		unconfirmedList to peerList, where messages can be sent and received
-		"""
-		i = 0
-		while i < len(self.unconfirmedList):
-			peer = self.unconfirmedList[i]
-			input = self.printThis("y/n to add: " + str(peer) + " ", type = "input")
-			if input == "y":
-				self.peerList.append(peer)
-				self.unconfirmedList.remove(peer)
-
 	
 	def acceptor(self):
 		"""
@@ -147,11 +110,14 @@ class Network(object):
 			# timeout is in 2 seconds
 		for sockets in receiveOpen:
 			message = pickle.loads(sockets.recv(1024))
-			if type(message) is list:
+			
+			#####DO NOT BELIEVE THIS IS USED IN THIS MANUAL VERSION####
+				if type(message) is list:
 				messageStr = []
 				for peers in message:
 					messageStr.append(str(peers))
-				self.printThis("received peerlist: " + str(messageStr) + " from " + str((peers.ip, peers.port)))
+				self.interface.netMessage("received peerlist: " + str(messageStr),peer = peers)
+			###########################################################
 			
 			else:
 				for peers in list(self.peerList):
@@ -159,22 +125,12 @@ class Network(object):
 						if str(message) == "/exit":
 							peers.Sock = None
 							peers.hasSock = None
-							if peers.name != None:
-								self.printThis(peers.name + " exited.")
-							else:
-								self.printThis(str((peers.IP,peers.port)) + " exited.")
-						elif peers.name != None:
-							self.printThis("from " + peers.name + ": " + str(message))
+							self.interface.netMessage(str(peers) + " exited.")
 						else:
-							self.printThis("from " + str((peers.IP,peers.port)) + ": " + str(message))
+							self.interface.netMessage(str(message),peer = peers)
 				
-		
-	
-	
-	
 	def shutdown(self):
 		""" Gracefully closes down all sockets for this peer"""
-		
 		for peer in self.peerList:
 			if peer.hasSock:
 				peer.hasSock = False # Doing this before to try to prevent an error

@@ -1,3 +1,5 @@
+from Network import Network
+from Peer import Peer
 
 class Interface(object):
 	
@@ -22,8 +24,11 @@ class Interface(object):
 
 		# Close down the network
 		self.network.shutdown()
+		self.network = None
 	
+	############### INTERFACE FUNCTION SECTION ###############
 	
+	#######Needed for network creation#########
 	
 	def getOwnIP(self):
 	""" Attempts to autodetect the user's LAN IP address, and falls back to manual
@@ -78,13 +83,61 @@ class Interface(object):
 	
 	return int(port)
 	
+	##########END OF NETWORK CREATION #############
 	
-	def connector():
+	
+	
+	
+	########## NEEDED FOR NETWORK FUNCTION ##########
+	
+	def connector(self):
 	""" Prompts user for data to connect to another peer, and establishes the connection.
 	 
 	    Warning. Uses global variable myNetwork."""
+		peerIP = raw_input("Enter it your peer's IP address: ")
+		peerPort = getPort()
+		self.network.connect(peerIP, peerPort)
+		
+	def netMessage(self, message, peer = None):
+		if peer is not None:
+			print("From {0!s}: {1!s}".format(peer,message)
+		else:
+			print(str(message))
+			
+		
+		
+	############## END OF NETWORK FUNCTION ###########
 	
-	peerIP = raw_input("Enter it your peer's IP address: ")
-	peerPort = getPort()
-
-	network.connect(peerIP, peerPort)
+	
+	
+	######### ADDITIONAL ########
+	
+	def printThis(self, toPrint, type = None):
+		"""
+		Very simple method -- if type is none it prints toPrint, otherwise it returns 
+		raw user input with toPrint being used as a prompt
+		"""
+		if type is not None:
+			return raw_input(toPrint)
+		else:
+			print toPrint
+		
+	def name(): 
+		for peers in list(self.network.peerList):
+			print(str(peers) + " " + str(self.network.peerList.index(peers)))
+		index = self.printThis("Please enter the index of the peer you would like to name: \n", type = "input")
+		name = self.printThis("Please enter the name of the peer you would like to name: \n", type = "input")
+		self.network.name(name,index)
+		
+	def addPort():
+		for peers in list(self.network.peerList):
+			print(str(peers) + " " + str(self.network.peerList.index(peers)))
+		index = int(self.printThis("Please enter the index of the peer you would like to add a port to: \n", type = "input"))
+		port = int(self.printThis("Please enter the port for the peer: \n", type = "input"))
+		self.network.addPort(port,index)
+	#### END OF ADDITIONAL #######
+	
+	
+	
+	############## END OF INTERFACE FUNTIONS ##################
+	
