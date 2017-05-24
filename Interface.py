@@ -1,5 +1,6 @@
 from Network import Network
 from Peer import Peer
+import socket
 
 class Interface(object):
 	
@@ -8,6 +9,7 @@ class Interface(object):
 		self.tagDict = tagDict
 		
 	def run():
+		print("runnin")
 		command = None
 		while command != "/exit":
 			command = raw_input("Please type your message, or enter a command, '/connect', '/accept', '/name', '/addPort', '/exit' then hit enter:  \n")
@@ -31,57 +33,56 @@ class Interface(object):
 	#######Needed for network creation#########
 	
 	def getOwnIP(self):
-	""" Attempts to autodetect the user's LAN IP address, and falls back to manual
-	entry when autodetect fails.
+		""" Attempts to autodetect the user's LAN IP address, and falls back to manual
+		entry when autodetect fails.
 	
-	See http://stackoverflow.com/questions/166506 for details. """
+		See http://stackoverflow.com/questions/166506 for details. """
+		# Send a packet to google who will reply to our IP
+		s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+		s.connect(('google.com', 53))
+		IP = s.getsockname()[0]
 	
-	# Send a packet to google who will reply to our IP
-	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-	s.connect(('google.com', 53))
-	IP = s.getsockname()[0]
+		# Make sure the detected IP looks valid, and if not fallback
+		while not self.validateIP(IP):
+			IP = raw_input("Please enter a valid IP address: ")
 	
-	# Make sure the detected IP looks valid, and if not fallback
-	while not validateIP(IP):
-		IP = raw_input("Please enter a valid IP address: ")
-	
-	return IP
+		return IP
 	
 	
 	def validateIP(self, IP):
-	'''	Validates an IP address before joining network'''
-	sections = IP.split(".") #Creating sections list with IP address split up each period
+		'''	Validates an IP address before joining network'''
+		sections = IP.split(".") #Creating sections list with IP address split up each period
 	
-	if len(sections) != 4: #Check for 3 periods
-		return False
-	
-	for section in sections:
-		if not section.isdigit(): #Making sure all contents are ints
-			return False
-		section = int(section)
-		if section < 0 or section > 255: #validate range of the number
+		if len(sections) != 4: #Check for 3 periods
 			return False
 	
-	if sections[0] == "127": #not loop-back address
-		return False
+		for section in sections:
+			if not section.isdigit(): #Making sure all contents are ints
+				return False
+			section = int(section)
+			if section < 0 or section > 255: #validate range of the number
+				return False
 	
-	return True
+		if sections[0] == "127": #not loop-back address
+			return False
+	
+		return True
 	
 	
 	
 	def getPort(self):
-	"""
-	Interactively determine a port. Proposes default, but allows overriding.
-	"""
+		"""
+		Interactively determine a port. Proposes default, but allows overriding.
+		"""
 	
-	DEFAULT = 12345
+		DEFAULT = 12345
 	
-	port = raw_input("Default port: {}. Enter to continue or type an alternate. ".format(DEFAULT))
+		port = raw_input("Default port: {}. Enter to continue or type an alternate. ".format(DEFAULT))
 	
-	if port == "":
-		return DEFAULT
+		if port == "":
+			return DEFAULT
 	
-	return int(port)
+		return int(port)
 	
 	##########END OF NETWORK CREATION #############
 	
@@ -91,26 +92,19 @@ class Interface(object):
 	########## NEEDED FOR NETWORK FUNCTION ##########
 	
 	def connector(self):
-	""" Prompts user for data to connect to another peer, and establishes the connection.
-	 
-	    Warning. Uses global variable myNetwork."""
+		""" Prompts user for data to connect to another peer, and establishes the connection.
+		Warning. Uses global variable myNetwork."""
 		peerIP = raw_input("Enter it your peer's IP address: ")
 		peerPort = getPort()
 		self.network.connect(peerIP, peerPort)
 		
 	def netMessage(self, message, peer = None):
 		if peer is not None:
-			print("From {0!s}: {1!s}".format(peer,message)
+			print("From {0!s}: {1!s}".format(peer,message))
 		else:
 			print(str(message))
-			
-		
-		
-	############## END OF NETWORK FUNCTION ###########
-	
-	
-	
-	######### ADDITIONAL ########
+############## END OF NETWORK FUNCTION ###########
+######### ADDITIONAL ########
 	
 	def printThis(self, toPrint, type = None):
 		"""

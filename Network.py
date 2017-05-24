@@ -109,10 +109,8 @@ class Network(object):
 			# but I don't currently need to check for writable/errors... if I need to I will later
 			# timeout is in 2 seconds
 		for sockets in receiveOpen:
-			message = pickle.loads(sockets.recv(1024))
-			
-			#####DO NOT BELIEVE THIS IS USED IN THIS MANUAL VERSION####
-				if type(message) is list:
+			message = pickle.loads(sockets.recv(1024)) #DO NOT BELIEVE THIS IS USED IN THIS MANUAL VERSION
+			if type(message) is list:
 				messageStr = []
 				for peers in message:
 					messageStr.append(str(peers))

@@ -1,6 +1,6 @@
 import socket
 import time
-
+from Interface import Interface
 from WorkerThread import WorkerThread
 from Network import Network
 
@@ -30,15 +30,7 @@ myInterface.network = myNetwork
 ############################################################
 	
 while myInterface.network is not None: #with this implementation, when the interface closes, this program closes
-
-######TODO code program logic here #############
+	
+	######TODO code program logic here #############
 	
 	time.sleep(3)
-
-
-
-
-
-
-
-		
