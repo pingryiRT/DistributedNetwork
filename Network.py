@@ -95,7 +95,14 @@ class Network(object):
 		
 		#print("Accepted connection from {}".format(clientAddress))
 	
-	
+	def approve(self, peer):
+		"""
+		Moves a peer that has attempted to connect to this network instance from the 
+		unconfirmedList to peerList, where messages can be sent and received
+		"""
+		
+		self.unconfirmedList.remove(peer)
+		self.peerList.append(peer)
 	
 	def receiver(self):
 		""" Goes through all of the peers, and attempts to receive messages from all of the ones

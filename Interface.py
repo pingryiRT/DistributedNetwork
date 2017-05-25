@@ -8,15 +8,14 @@ class Interface(object):
 		self.network = network
 		self.tagDict = tagDict
 		
-	def run():
-		print("runnin")
+	def run(self):
 		command = None
 		while command != "/exit":
-			command = raw_input("Please type your message, or enter a command, '/connect', '/accept', '/name', '/addPort', '/exit' then hit enter:  \n")
+			command = raw_input("Please type your message, or enter a command, '/connect', '/approve', '/name', '/addPort', '/exit' then hit enter:  \n")
 			if command == "/connect":
-				connector()
-			elif command == "/accept":
-				self.network.manualAcceptor()
+				self.connector()
+			elif command == "/approve":
+				self.approver()
 			elif command == "/name":
 				self.network.name()
 			elif command == "/addPort":
@@ -95,7 +94,7 @@ class Interface(object):
 		""" Prompts user for data to connect to another peer, and establishes the connection.
 		Warning. Uses global variable myNetwork."""
 		peerIP = raw_input("Enter it your peer's IP address: ")
-		peerPort = getPort()
+		peerPort = self.getPort()
 		self.network.connect(peerIP, peerPort)
 		
 	def netMessage(self, message, peer = None):
@@ -103,6 +102,20 @@ class Interface(object):
 			print("From {0!s}: {1!s}".format(peer,message))
 		else:
 			print(str(message))
+	def approver(selfs):
+		"""
+		Moves a peer that has connected to this network instance from the
+		unconfirmedList to peerList, where messages can be sent and received.
+	
+		Warning. Uses global variable myNetwork."""
+	
+		i = 0
+		while i < len(self.network.unconfirmedList):
+			peer = self.network.unconfirmedList[i]
+			add = raw_input("y/n to add: " + str(peer) + " ").lower()
+			if add == "y":
+				self.network.approve(peer)
+			i += 1
 ############## END OF NETWORK FUNCTION ###########
 ######### ADDITIONAL ########
 	

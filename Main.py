@@ -23,6 +23,16 @@ myPort = myInterface.getPort()
 myNetwork = Network(myIP, myPort,myInterface)
 adamNode = raw_input("Starting a new network? (y/N): ")
 
+interfaceThread = WorkerThread("interface", myInterface)
+receiverThread = WorkerThread("receiver",myNetwork)
+acceptorThread = WorkerThread("acceptor",myNetwork)
+
+
+
+interfaceThread.start()
+receiverThread.start()
+acceptorThread.start()
+
 # Add the first peer if the user wants one
 if adamNode == "" or adamNode[0].lower()!= "y":
 	connector()
