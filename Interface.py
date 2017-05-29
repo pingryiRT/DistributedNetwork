@@ -102,13 +102,13 @@ class Interface(object):
 			print("From {0!s}: {1!s}".format(peer,message))
 		else:
 			print(str(message))
-	def approver(selfs):
+	def approver(self):
 		"""
 		Moves a peer that has connected to this network instance from the
 		unconfirmedList to peerList, where messages can be sent and received.
 	
 		Warning. Uses global variable myNetwork."""
-	
+		
 		i = 0
 		while i < len(self.network.unconfirmedList):
 			peer = self.network.unconfirmedList[i]
