@@ -37,21 +37,6 @@ class Network(object):
 		serverSocket.bind((self.ip, self.port))
 		serverSocket.listen(0)
 		self.server = serverSocket
-      	
-
-	def name(self, name, index):
-		"""
-		Gives a peer a unique name identifier (determined by the input of the user)
-		The name will be accessible through peer.name
-		"""
-		self.peerList[int(index)].name=name
-		
-	def addPort(self, port, index):
-		"""
-		Adds a server port to a peer, the peer which has the port added, and the port number
-		to be added is determined with user input
-		"""
-		self.peerList[index].port = port
 	
 	
 	def sender(self, sendMessage):

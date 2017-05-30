@@ -33,10 +33,12 @@ interfaceThread.start()
 receiverThread.start()
 acceptorThread.start()
 
+
+myInterface.network = myNetwork
+
 # Add the first peer if the user wants one
 if adamNode == "" or adamNode[0].lower()!= "y":
-	connector()
-myInterface.network = myNetwork
+	myInterface.connector()
 ############################################################
 	
 while myInterface.network is not None: #with this implementation, when the interface closes, this program closes

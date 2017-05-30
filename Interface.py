@@ -17,9 +17,9 @@ class Interface(object):
 			elif command == "/approve":
 				self.approver()
 			elif command == "/name":
-				self.network.name()
+				self.name()
 			elif command == "/addPort":
-				self.network.addPort()
+				self.addPort()
 			else:
 				self.network.sender(command)
 
@@ -119,6 +119,7 @@ class Interface(object):
 ############## END OF NETWORK FUNCTION ###########
 ######### ADDITIONAL ########
 	
+	
 	def printThis(self, toPrint, type = None):
 		"""
 		Very simple method -- if type is none it prints toPrint, otherwise it returns 
@@ -128,20 +129,31 @@ class Interface(object):
 			return raw_input(toPrint)
 		else:
 			print toPrint
+			
 		
-	def name(): 
+	def name(self): 
+		"""
+		Gives a peer a unique name identifier (determined by the input of the user)
+		The name will be accessible through peer.name
+		"""
 		for peers in list(self.network.peerList):
 			print(str(peers) + " " + str(self.network.peerList.index(peers)))
-		index = self.printThis("Please enter the index of the peer you would like to name: \n", type = "input")
+		index = int(self.printThis("Please enter the index of the peer you would like to name: \n", type = "input"))
 		name = self.printThis("Please enter the name of the peer you would like to name: \n", type = "input")
-		self.network.name(name,index)
+		self.network.peerList[index].name = name
 		
-	def addPort():
+		
+	def addPort(self):
+		"""
+		Adds a server port to a peer, the peer which has the port added, and the port number
+		to be added is determined with user input
+		"""
 		for peers in list(self.network.peerList):
 			print(str(peers) + " " + str(self.network.peerList.index(peers)))
 		index = int(self.printThis("Please enter the index of the peer you would like to add a port to: \n", type = "input"))
 		port = int(self.printThis("Please enter the port for the peer: \n", type = "input"))
-		self.network.addPort(port,index)
+		self.network.peerList[index].port = port
+		
 	#### END OF ADDITIONAL #######
 	
 	

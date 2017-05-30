@@ -28,9 +28,11 @@ class Peer(object):
 			self.hasSock = False
 		self.name = None
 	
-	def __str__(self):
-		"""
-		Returns a string representation of this peer including IPv4 address, port and whether a socket exists.
+	
+	def __repr__(self):
+		""" Returns a string representation of this peer including IPv4 address, port and 
+		whether a socket exists. If the server port of the peer is not known, None is 
+		printed.
 		
 		Example with a socket:  Peer@192.168.1.4 12345(S)
 		Example without socket: Peer@192.168.1.4 12345
@@ -40,17 +42,31 @@ class Peer(object):
 		if self.hasSock:
 			text += "(S)"
 		return text
-	
-	
+		
+		
+	def __str__(self):
+		""" Attempts to return a relatively human-readable representation of the peer by
+		using the name that the peer has provided. If the peer is unnamed by the user, 
+		returns the representation of the user using the __repr__ function
+		"""
+		if self.name is not None:
+			return self.name
+		else:
+			return repr(self)
+		
 	
 	def __eq__(self, other):
-	  """ Compares this peer to another peer for equality. (for == operator) """
-	  
-	  return self.IP == other.IP and self.port == other.port
-	
+		""" Compares this peer to another peer for equality. (for == operator)
+		Other can be either the other peer object or the string representation
+		of that peer object. """
+		if isinstance(other,Peer):
+			return self.IP == other.IP and self.port == other.port
+		else:
+			return repr(self) == other
+			
+			
 	def __neq__(self, other):
 	  """ Compares the peer to another peer for inequality. (for != operator) """
-	  
 	  return not self == other
 	
 	def sendable(self):
