@@ -9,6 +9,9 @@ class Interface(object):
 		self.tagDict = tagDict
 		
 	def run(self):
+		adamNode = self.printThis("Would you like to start a new network? y/n ", type = "input")
+		if adamNode == "" or adamNode[0].lower()!= "y":
+			self.connector()
 		command = None
 		while command != "/exit":
 			command = raw_input("Please type your message, or enter a command, '/connect', '/approve', '/name', '/addPort', '/exit' then hit enter:  \n")
