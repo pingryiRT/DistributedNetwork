@@ -59,10 +59,10 @@ class Peer(object):
 		""" Compares this peer to another peer for equality. (for == operator)
 		Other can be either the other peer object or the string representation
 		of that peer object. """
-		if isinstance(other,Peer):
+		if isinstance(other,Peer): 
 			return self.IP == other.IP and self.port == other.port
 		else:
-			return repr(self) == other
+			return repr(self) == other #NOTE this part code is currently untested, and may be awful.
 			
 			
 	def __neq__(self, other):
