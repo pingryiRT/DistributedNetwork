@@ -13,7 +13,7 @@ class Network(object):
 	and keep them separate in the future, or simultaneously connect as multiple identities.
 	"""
 	
-	def __init__(self, ip, port,interface):
+	def __init__(self, ip, port,alerter):
 		"""
 		peerList -- a list of all the current Peer objects, which are used to send and receive 
 		messages
@@ -25,6 +25,9 @@ class Network(object):
 		A name object can be added to peers as a means of providing a unique id
 		unconfirmedList -- contains peers that have not been manually accepted by the user
 		and are not yet used to send and receive messages
+		alerter -- method from interface that is called to transfer messages to the interface
+		class
+		box -- used to store messages when alerter is none
 		"""
 		
 		self.unconfirmedList = []
@@ -32,11 +35,28 @@ class Network(object):
 		self.printStopper = False
 		self.ip = ip
 		self.port = port
-		self.interface = interface
+		self.alerter = alerter
+		self.box = []
+		
 		serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		serverSocket.bind((self.ip, self.port))
 		serverSocket.listen(0)
 		self.server = serverSocket
+	
+	
+	def alertOrStore(self,message, peer = None):
+		""" Would be easier if we had a full xml setup, but currently just going to pass
+		it as message and peers, when we get the xml finished I'll update it.
+		
+		alertOrStore is a wrapper that either sends the message to an interface, or if an
+		interface is not available stores the message contents in box
+		"""
+		if self.alerter is None:
+			if peer is None:
+				box.append(message)
+			else:
+				box.append((message,peer))
+		self.alerter(message,peer)
 	
 	
 	def sender(self, sendMessage):
@@ -57,13 +77,13 @@ class Network(object):
 			sock.connect((ip, port))
 			
 		except socket.error:
-			self.interface.netMessage("Alert: could not connect to peer: ({0}, {1!s}".format(ip,port))
+			self.alertOrStore("Alert: could not connect to peer: ({0}, {1!s}".format(ip,port))
 		
 		finally:
 			newPeer = Peer(ip, port)
 			self.peerList.append(newPeer)
 			newPeer.addSock(sock)
-			self.interface.netMessage(str(newPeer) + " connected.")
+			self.alertOrStore(str(newPeer) + " connected.")
 			newPeer.send(self.port)
 	
 	
@@ -106,7 +126,7 @@ class Network(object):
 				messageStr = []
 				for peers in message:
 					messageStr.append(str(peers))
-				self.interface.netMessage("received peerlist: " + str(messageStr),peer = peers)
+				self.alertOrStore("received peerlist: " + str(messageStr),peer = peers)
 			###########################################################
 			
 			else:
@@ -115,9 +135,9 @@ class Network(object):
 						if str(message) == "/exit":
 							peers.Sock = None
 							peers.hasSock = None
-							self.interface.netMessage(str(peers) + " exited.")
+							self.alertOrStore(str(peers) + " exited.")
 						else:
-							self.interface.netMessage(str(message),peer = peers)
+							self.alertOrStore(str(message),peer = peers)
 				
 	def shutdown(self):
 		""" Gracefully closes down all sockets for this peer"""

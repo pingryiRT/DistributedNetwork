@@ -20,7 +20,7 @@ myPort = myInterface.getPort()
 
 
 # Initialize a network
-myNetwork = Network(myIP, myPort,myInterface)
+myNetwork = Network(myIP, myPort,myInterface.netMessage)
 
 interfaceThread = WorkerThread("interface", myInterface)
 receiverThread = WorkerThread("receiver",myNetwork)
