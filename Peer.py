@@ -14,44 +14,59 @@ class Peer(object):
 	name -- initialized as None, but can be added to give a peer object a unique identifier
 	"""
 	
-	def __init__(self, stringIP, intPort = None, socket = None, name = "Peer"):
+	def __init__(self, stringIP, intPort = None, Socket = None, isBlocking = None):
 		self.IP = stringIP
 		self.port = intPort
 			
 		# If a socket is provided, use it. Otherwise, document that.
 		#TODO Do we really need the bool hasSocket? Can't we just test for `self.socket is None`? 
-		if socket is not None:
-			self.Sock = socket
+		if Socket is not None:
+			self.Sock = Socket
 			self.hasSock = True 
 			
 		else:
 			self.hasSock = False
-		self.name = name
+		self.name = None
 	
-	def __str__(self):
-		"""
-		Returns a string representation of this peer including IPv4 address, port,
-		human readable name, and whether a socket exists.
+	
+	def __repr__(self):
+		""" Returns a string representation of this peer including IPv4 address, port and 
+		whether a socket exists. If the server port of the peer is not known, None is 
+		printed.
 		
-		Example with a socket:  Bob@192.168.1.4 12345(S)
-		Example without socket: Bob@192.168.1.4 12345
+		Example with a socket:  Peer@192.168.1.4 12345(S)
+		Example without socket: Peer@192.168.1.4 12345
 		"""
 		
-		text = self.name + "@" + self.IP + " " + str(self.port)
+		text = "Peer@" + self.IP + " " + str(self.port)
 		if self.hasSock:
 			text += "(S)"
 		return text
-	
-	
+		
+		
+	def __str__(self):
+		""" Attempts to return a relatively human-readable representation of the peer by
+		using the name that the peer has provided. If the peer is unnamed by the user, 
+		returns the representation of the user using the __repr__ function
+		"""
+		if self.name is not None:
+			return self.name
+		else:
+			return repr(self)
+		
 	
 	def __eq__(self, other):
-	  """ Compares this peer to another peer for equality. (for == operator) """
-	  
-	  return self.IP == other.IP and self.port == other.port
-	
+		""" Compares this peer to another peer for equality. (for == operator)
+		Other can be either the other peer object or the string representation
+		of that peer object. """
+		if isinstance(other,Peer): 
+			return self.IP == other.IP and self.port == other.port
+		else:
+			return repr(self) == other #NOTE this part code is currently untested, and may be awful.
+			
+			
 	def __neq__(self, other):
 	  """ Compares the peer to another peer for inequality. (for != operator) """
-	  
 	  return not self == other
 	
 	def sendable(self):
@@ -65,9 +80,10 @@ class Peer(object):
 			try:
 				self.Sock.send(pickle.dumps(message))
 			except socket.error:
+				print("error sending message " + message + " to peer " + str((self.IP,self.port)))
 				self.hasSock = None
-				raise Exception("error sending message " + message + " to peer " + str(self))
-	
+				print("peer removed")
+		
 	def receive(self):
 		""" Receive a message from this peer and print it. """
 		if self.hasSock==True:
@@ -75,9 +91,9 @@ class Peer(object):
 				print("hasSockTrue")
 				
 				message = pickle.loads(self.Sock.recv(1024))
-				return message
+				print(message)
 			except socket.error:
-				raise Exception("error receiving message from " + str(self))
+				print("error receiving message from " + str((self.IP,self.port)))
 
 	def addSock(self,Socket):
 		""" Add a socket to the peer. """

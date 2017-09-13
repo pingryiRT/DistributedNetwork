@@ -13,40 +13,59 @@ class Network(object):
 	and keep them separate in the future, or simultaneously connect as multiple identities.
 	"""
 	
-	
-	
-	def __init__(self, ip, port):
+	def __init__(self, ip, port,alerter):
 		"""
 		peerList -- a list of all the current Peer objects, which are used to send and receive 
 		messages
-		unconfirmedList -- contains peers that have not been manually accepted by the user
-		and are not yet used to send and receive messages
+		Stopper -- used to stop everything
+		printStopper -- used as a poor-man's lock object to control printing output 
 		ip -- This hosts own IP address as seen by peers on the network
 		port -- The port on which this host is running a server
 		server -- the server socket object of the network (for other nodes to connect to)
 		A name object can be added to peers as a means of providing a unique id
+		unconfirmedList -- contains peers that have not been manually accepted by the user
+		and are not yet used to send and receive messages
+		alerter -- method from interface that is called to transfer messages to the interface
+		class
+		box -- used to store messages when alerter is none
 		"""
 		
 		self.unconfirmedList = []
 		self.peerList = []
+		self.printStopper = False
 		self.ip = ip
 		self.port = port
+		self.alerter = alerter
+		self.box = []
 		
-		# Create the server socket and make it listen
-		self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		self.server.bind((self.ip, self.port))
-		self.server.listen(0)
+		serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		serverSocket.bind((self.ip, self.port))
+		serverSocket.listen(0)
+		self.server = serverSocket
 	
 	
+	def alertOrStore(self,message, peer = None):
+		""" Would be easier if we had a full xml setup, but currently just going to pass
+		it as message and peers, when we get the xml finished I'll update it.
+		
+		alertOrStore is a wrapper that either sends the message to an interface, or if an
+		interface is not available stores the message contents in box
+		"""
+		if self.alerter is None:
+			if peer is None:
+				box.append(message)
+			else:
+				box.append((message,peer))
+		self.alerter(message,peer)
 	
-	def send(self, message):
+	
+	def sender(self, sendMessage):
 		"""
 		Sends message to all peers with a socket
 		"""
-		
 		for peers in list(self.peerList):
 			if peers.hasSock == True: # To me: don't you dare change this to if peers.hasSock: actually this one should work but still...
-				peers.send(message)
+				peers.send(sendMessage)
 
 	
 	def connect(self, ip, port):
@@ -58,15 +77,28 @@ class Network(object):
 			sock.connect((ip, port))
 			
 		except socket.error:
-			raise Exception("Couldn't connect to peer " + str((ip, port)))
+			self.alertOrStore("Alert: could not connect to peer: ({0}, {1!s}".format(ip,port))
 		
 		finally:
-			newPeer = Peer(ip, port, socket = sock)
+			newPeer = Peer(ip, port)
 			self.peerList.append(newPeer)
-			
-			newPeer.send(str(self.port))
+			newPeer.addSock(sock)
+			self.alertOrStore(str(newPeer) + " connected.")
+			newPeer.send(self.port)
 	
 	
+	def acceptor(self):
+		"""
+		Automatically accepts incoming peer conncections, but leaves them in the unconfirmedList
+		where messages they attempt to send are not deserialized, and any messages sent by the 
+		user will not be forwarded to them
+		"""
+		clientSocket, clientAddress = self.server.accept() 
+		thisPeer = Peer(clientAddress[0],Socket = clientSocket)
+		if thisPeer not in self.unconfirmedList:
+			self.unconfirmedList.append(thisPeer)
+		
+		#print("Accepted connection from {}".format(clientAddress))
 	
 	def approve(self, peer):
 		"""
@@ -76,22 +108,6 @@ class Network(object):
 		
 		self.unconfirmedList.remove(peer)
 		self.peerList.append(peer)
-
-	
-	def acceptor(self):
-		"""
-		Automatically accepts incoming peer conncections, but leaves them in the unconfirmedList
-		where messages they attempt to send are not deserialized, and any messages sent by the 
-		user will not be forwarded to them
-		"""
-		clientSocket, clientAddress = self.server.accept() 
-		thisPeer = Peer(clientAddress[0], socket = clientSocket)
-		if thisPeer not in self.unconfirmedList:
-			self.unconfirmedList.append(thisPeer)
-		
-		#print("Accepted connection from {}".format(clientAddress))
-	
-	
 	
 	def receiver(self):
 		""" Goes through all of the peers, and attempts to receive messages from all of the ones
@@ -105,12 +121,13 @@ class Network(object):
 			# but I don't currently need to check for writable/errors... if I need to I will later
 			# timeout is in 2 seconds
 		for sockets in receiveOpen:
-			message = pickle.loads(sockets.recv(1024))
+			message = pickle.loads(sockets.recv(1024)) #DO NOT BELIEVE THIS IS USED IN THIS MANUAL VERSION
 			if type(message) is list:
 				messageStr = []
 				for peers in message:
 					messageStr.append(str(peers))
-				print("received peerlist: " + str(messageStr) + " from " + str((peers.ip, peers.port)))
+				self.alertOrStore("received peerlist: " + str(messageStr),peer = peers)
+			###########################################################
 			
 			else:
 				for peers in list(self.peerList):
@@ -118,17 +135,12 @@ class Network(object):
 						if str(message) == "/exit":
 							peers.Sock = None
 							peers.hasSock = None
-							print(str(peers) + " exited.")
+							self.alertOrStore(str(peers) + " exited.")
 						else:
-							print("from " + str(peers) + ": " + str(message))
+							self.alertOrStore(str(message),peer = peers)
 				
-		
-	
-	
-	
 	def shutdown(self):
 		""" Gracefully closes down all sockets for this peer"""
-		
 		for peer in self.peerList:
 			if peer.hasSock:
 				peer.hasSock = False # Doing this before to try to prevent an error
