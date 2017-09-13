@@ -1,15 +1,9 @@
 # ChatClient
-A text-based instant messaging client to practice network programming
+A text-based instant messaging client, built off of our P2P network.
 
 # Usage
-Let's wait until we have something close to working to write this.
+Not currently functional. For a functional version, check out our ChatClient project.
 
 # Goals
 
-Here are some goals I think we should try to implement with ones that I suspect to
-be easier closer to the top, but not in a strict order.
-
-1. A simple, no-security client where exactly two nodes can share text-based messages.
-2. Allow multiple nodes to communicate in a multi-party conversation. One node may act as a central server.
-3. Allow encryption and authentication among chatting nodes.
-4. Make the network P2P.
+1) Update to allow a functional import/usage of the P2P project.
