@@ -3,13 +3,21 @@ import time
 from Interface import Interface
 from WorkerThread import WorkerThread
 from Network import Network
-
+##########
+#TODO check what specifically we need to change to organize our imports and get them working
+##########
 
 ################################## MAIN PROGRAM BELOW ##################################
 
 # Initialize the Interface
 
+
+##########
+#TODO Formalize XML for tagDict  we also might want to move XML into network
+##########
 tagDict = {}
+
+
 myInterface = Interface(tagDict)
 
 ############### THIS COULD BE MOVED TO INTERFACE###########
@@ -23,12 +31,21 @@ myPort = myInterface.getPort()
 myNetwork = Network(myIP, myPort,myInterface.netMessage)
 
 interfaceThread = WorkerThread("interface", myInterface)
+
+
+######
+# TODO See if it would be possible to make the two below part of Network, in the __init__
+######
 receiverThread = WorkerThread("receiver",myNetwork)
 acceptorThread = WorkerThread("acceptor",myNetwork)
 
 
 
 interfaceThread.start()
+
+######
+# TODO See if it would be possible to make the two below part of Network, in the __init__
+######
 receiverThread.start()
 acceptorThread.start()
 

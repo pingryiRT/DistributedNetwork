@@ -7,8 +7,11 @@ class Interface(object):
 	def __init__(self, tagDict, network = None):
 		self.network = network
 		self.tagDict = tagDict
-		
+	
 	def run(self):
+	#########
+	## TODO add in something to allow checking the network's variable box for missed messages
+	#########
 		adamNode = self.printThis("Would you like to start a new network? y/n ", type = "input")
 		if adamNode == "" or adamNode[0].lower()!= "y":
 			self.connector()
@@ -27,6 +30,10 @@ class Interface(object):
 				self.network.sender(command)
 
 		# Close down the network
+		
+		########
+		# TODO allow an interface only shutdown, and leave the network running (set the required alerter to none)
+		#########
 		self.network.shutdown()
 		self.network = None
 	
