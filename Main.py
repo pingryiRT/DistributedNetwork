@@ -1,24 +1,15 @@
 import socket
 import time
 from Interface import Interface
-from P2PPlatform import Network
-#from WorkerThread import WorkerThread
+from WorkerThread import WorkerThread
+from Network import Network
 
-##########
-#TODO check what specifically we need to change to organize our imports and get them working
-##########
 
 ################################## MAIN PROGRAM BELOW ##################################
 
 # Initialize the Interface
 
-
-##########
-#TODO Formalize XML for tagDict  we also might want to move XML into network
-##########
 tagDict = {}
-
-
 myInterface = Interface(tagDict)
 
 ############### THIS COULD BE MOVED TO INTERFACE###########
@@ -28,25 +19,22 @@ print("I'll need your port.")
 myPort = myInterface.getPort()
 
 
+
 # Initialize a network
-myNetwork = Network(myIP, myPort,myInterface.netMessage)
-
-interfaceThread = WorkerThread("interface", myInterface)
+myNetwork = Network(myIP, myPort)
 
 
-######
-# TODO See if it would be possible to make the two below part of Network, in the __init__
-######
+#add network reference to interface
+myInterface.network = myNetwork
+
+myInterface.run()
+"""interfaceThread = WorkerThread("interface", myInterface)
 receiverThread = WorkerThread("receiver",myNetwork)
 acceptorThread = WorkerThread("acceptor",myNetwork)
 
 
 
 interfaceThread.start()
-
-######
-# TODO See if it would be possible to make the two below part of Network, in the __init__
-######
 receiverThread.start()
 acceptorThread.start()
 
@@ -61,4 +49,4 @@ while myInterface.network is not None: #with this implementation, when the inter
 	
 	######TODO code program logic here #############
 	
-	time.sleep(3)
+	time.sleep(3)"""
