@@ -1,7 +1,7 @@
 import socket
 import time
 from Interface import Interface
-from Network import Network
+from P2PPlatform import Network
 
 
 ################################## MAIN PROGRAM BELOW ##################################
