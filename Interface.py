@@ -1,5 +1,5 @@
-from Network import Network
-from Peer import Peer
+from P2PPlatform import Network
+from P2PPlatform import Peer
 import socket
 
 class Interface(object):

@@ -1,8 +1,9 @@
 import socket
 import time
 from Interface import Interface
-from WorkerThread import WorkerThread
-from Network import Network
+from P2PPlatform import Network
+#from WorkerThread import WorkerThread
+
 ##########
 #TODO check what specifically we need to change to organize our imports and get them working
 ##########
