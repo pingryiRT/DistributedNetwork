@@ -1,7 +1,6 @@
 import socket
 import time
 from Interface import Interface
-from WorkerThread import WorkerThread
 from Network import Network
 
 
