@@ -1,13 +1,15 @@
 from P2PPlatform import Network
 from P2PPlatform import Peer
 import socket
+import subprocess
 
 class Interface(object):
 	
 	def __init__(self, tagDict, network = None):
 		self.network = network
 		self.tagDict = tagDict
-	
+		self.receivingCode = False
+		
 	def run(self):
 	#########
 	## TODO add in something to allow checking the network's variable box for missed messages
@@ -26,6 +28,10 @@ class Interface(object):
 				self.name()
 			elif command == "/addPort":
 				self.addPort()
+			elif command == "/sendCode":
+				self.parseAndSend()
+			elif command == "/receiveCode":
+				self.receivingCode = True
 			else:
 				self.network.sender(command)
 
@@ -41,6 +47,54 @@ class Interface(object):
 	
 	#######Needed for network creation#########
 	
+	def parseAndSend(self):
+		fileName = raw_input("Please enter the filename to send: ")
+		toSendFile = programParser(fileName)
+		self.network.sender("<code> " + toSendFile)
+		
+	def programParser(self, filename):
+		openFile = open(filename,'r')
+		string = openFile.read()
+		openFile.close()
+		return string
+		
+		
+		
+		
+	#first function upon netmessage receiving a <code> tag...	
+	def receiveCode(self, peer, code):
+		self.receivingCode = False
+		if peer != None:
+			print("Code received from " + peer)
+		fileName = raw_input("Please enter name of the file to be created for the code: ")
+		programCreater(fileName,code)
+		run = raw_input("Run the file? y/n")
+		if run == "y" or run == "Y" or run == "Yes":
+			result = runProgram(fileName)
+			print(result)
+			sendYN = raw_input("Send the result? y/n")
+			if sendYN == "y" or run == "Y" or run == "Yes":
+				self.network.sender(result)
+				
+				
+				
+	#creates the file
+	def programCreater(self, filename,code):
+		openFile = open(filename,'w')
+		openFile.write("#!/usr/bin/env python \n")
+		openFile.write(code)
+		openFile.close()
+		
+		
+	#runs a python program
+	def runProgram(fileName):
+		#don't let shell = true, it allows shell injection
+		process = subprocess.check_output(["python",fileName])
+		return process		
+		
+		
+		
+		
 	def getOwnIP(self):
 		""" Attempts to autodetect the user's LAN IP address, and falls back to manual
 		entry when autodetect fails.
@@ -108,6 +162,8 @@ class Interface(object):
 		self.network.connect(peerIP, peerPort)
 		
 	def netMessage(self, message, peer = None):
+		if message[:6] == "<code>" and self.receivingCode:
+			receiveCode(peer,message[6:])
 		if peer is not None:
 			print("From {0!s}: {1!s}".format(peer,message))
 		else:
