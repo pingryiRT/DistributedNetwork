@@ -7,13 +7,16 @@ class Interface(object):
 	
 	def __init__(self, tagDict, network = None):
 		self.network = network
+		
 		self.tagDict = tagDict
 		self.receivingCode = False
+		
 		
 	def run(self):
 	#########
 	## TODO add in something to allow checking the network's variable box for missed messages
 	#########
+		self.network.alerters.append(self.netMessage)
 		adamNode = self.printThis("Would you like to start a new network? y/n ", type = "input")
 		if adamNode == "" or adamNode[0].lower()!= "y":
 			self.connector()
@@ -162,7 +165,7 @@ class Interface(object):
 		self.network.connect(peerIP, peerPort)
 		
 	def netMessage(self, message, peer = None):
-		if message[:6] == "<code>" and self.receivingCode:
+		if type(message) is str and message[:6] == "<code>" and self.receivingCode:
 			receiveCode(peer,message[6:])
 		if peer is not None:
 			print("From {0!s}: {1!s}".format(peer,message))
