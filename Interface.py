@@ -52,7 +52,7 @@ class Interface(object):
 	
 	def parseAndSend(self):
 		fileName = raw_input("Please enter the filename to send: ")
-		toSendFile = programParser(fileName)
+		toSendFile = self.programParser(fileName)
 		self.network.sender("<code> " + toSendFile)
 		
 	def programParser(self, filename):
@@ -70,10 +70,10 @@ class Interface(object):
 		if peer != None:
 			print("Code received from " + peer)
 		fileName = raw_input("Please enter name of the file to be created for the code: ")
-		programCreater(fileName,code)
+		self.programCreater(fileName,code)
 		run = raw_input("Run the file? y/n")
 		if run == "y" or run == "Y" or run == "Yes":
-			result = runProgram(fileName)
+			result = self.runProgram(fileName)
 			print(result)
 			sendYN = raw_input("Send the result? y/n")
 			if sendYN == "y" or run == "Y" or run == "Yes":
@@ -84,13 +84,12 @@ class Interface(object):
 	#creates the file
 	def programCreater(self, filename,code):
 		openFile = open(filename,'w')
-		openFile.write("#!/usr/bin/env python \n")
 		openFile.write(code)
 		openFile.close()
 		
 		
 	#runs a python program
-	def runProgram(fileName):
+	def runProgram(self,fileName):
 		#don't let shell = true, it allows shell injection
 		process = subprocess.check_output(["python",fileName])
 		return process		
@@ -166,7 +165,7 @@ class Interface(object):
 		
 	def netMessage(self, message, peer = None):
 		if type(message) is str and message[:6] == "<code>" and self.receivingCode:
-			receiveCode(peer,message[6:])
+			self.receiveCode(peer,message[6:])
 		if peer is not None:
 			print("From {0!s}: {1!s}".format(peer,message))
 		else:
