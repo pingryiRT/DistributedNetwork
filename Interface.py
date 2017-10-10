@@ -164,6 +164,7 @@ class Interface(object):
 		self.network.connect(peerIP, peerPort)
 		
 	def netMessage(self, message, peer = None):
+		message = message.contents
 		if type(message) is str and message[:6] == "<code>" and self.receivingCode:
 			self.receiveCode(peer,message[6:])
 		if peer is not None:
